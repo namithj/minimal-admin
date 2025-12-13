@@ -72,14 +72,21 @@ try {
     if (null === $lastOp) {
         throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
     }
-    echo "::notice::Last operation retrieved - CID: " . ($lastOp['cid'] ?? 'null') . "\n";
+    $prevCid = $lastOp['cid'] ?? null;
+    echo "::notice::Last operation retrieved - CID: {$prevCid}\n";
 
     echo "::group::Current DID Document\n";
     echo json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
-    // Decode existing verification methods
-    echo "::notice::Decoding existing verification methods...\n";
+    // Decode existing verification methods from rotationKeys (not verificationMethod)
+    // The rotationKeys field contains the keys we need to preserve
+    echo "::notice::Preserving rotation keys...\n";
+    $rotationKeys = [$rotationKey];  // Start with our rotation key
+
+    // Get the verification key ID from the DID document
+    // Extract the verification method from current document
+    echo "::notice::Extracting verification methods...\n";
     $verificationMethods = [];
     $methodsData = $currentDoc['verificationMethod'] ?? [];
     echo "::notice::Found " . count($methodsData) . " verification methods in current document\n";
@@ -97,48 +104,50 @@ try {
         }
     }
     echo "::notice::Successfully decoded " . count($verificationMethods) . " verification methods\n";
-    echo "::notice::Verification method keys: " . implode(', ', array_keys($verificationMethods)) . "\n";
 
-    // Get existing values
-    echo "::notice::Extracting existing DID document values...\n";
+    // Get existing alsoKnownAs
+    echo "::notice::Preserving alsoKnownAs...\n";
     $alsoKnownAs = $currentDoc['alsoKnownAs'] ?? [];
-    $services = $currentDoc['services'] ?? [];
-    echo "::notice::Found " . count($alsoKnownAs) . " handles and " . count($services) . " existing services\n";
 
-    // Update services with FAIR endpoint
-    $services[] = [
-		'id' => "#fairpm_repo",
-        'type' => 'FairPackageManagementRepo',
-        'endpoint' => $metadataUrl,
+    // Build services with FAIR endpoint
+    // Following the pattern from 07-generate-and-submit-did.php example
+    $services = [
+        'fairpm_repo' => [
+            'type' => 'FairPackageManagementRepo',
+            'endpoint' => $metadataUrl,
+        ],
     ];
+    echo "::notice::Service endpoint configured\n";
 
     echo "::group::Update Details\n";
-    echo "Services to update: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
-    echo "Previous operation CID: " . ($lastOp['cid'] ?? 'null') . "\n";
+    echo "Rotation Keys: " . count($rotationKeys) . "\n";
+    echo "Verification Methods: " . count($verificationMethods) . "\n";
+    echo "Also Known As: " . json_encode($alsoKnownAs) . "\n";
+    echo "Services: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
+    echo "Previous operation CID: {$prevCid}\n";
     echo "::endgroup::\n";
 
-    // Build update operation
+    // Build update operation following the example pattern
     $operation = new PlcOperation(
         type: 'plc_operation',
-        rotation_keys: [$rotationKey],
+        rotation_keys: $rotationKeys,
         verification_methods: $verificationMethods,
         also_known_as: $alsoKnownAs,
         services: $services,
-        prev: $lastOp['cid'] ?? null,
+        prev: $prevCid,
     );
 
-    // Sign the operation
+    // Sign the operation using DidCodec::sign_plc_operation()
     echo "::notice::Signing operation...\n";
-    $signedOp = $operation->sign($rotationKey);
-    $operationArray = (array) $signedOp->jsonSerialize();
+    $signedOp = \FAIR\DID\Crypto\DidCodec::sign_plc_operation($operation, $rotationKey);
 
     echo "::group::Signed Operation\n";
-    echo json_encode($operationArray, JSON_PRETTY_PRINT) . "\n";
+    echo json_encode((array) $signedOp->jsonSerialize(), JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
     // Submit update to PLC directory
     echo "::notice::Submitting update to PLC directory...\n";
-    $client->update_did($did, $operationArray);
+    $client->update_did($did, (array) $signedOp->jsonSerialize());
 
     echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
 
