@@ -87,14 +87,17 @@ try {
     foreach ($methodsData as $method) {
         $methodId = $method['id'] ?? '';
         $publicKeyMultibase = $method['publicKeyMultibase'] ?? '';
-        if (!empty($publicKeyMultibase)) {
+        if (!empty($publicKeyMultibase) && !empty($methodId)) {
             echo "::notice::Decoding verification method: {$methodId}\n";
             // Construct full did:key URI from multibase key
             $didKey = 'did:key:' . $publicKeyMultibase;
-            $verificationMethods[$methodId] = KeyFactory::decode_did_key($didKey);
+            // Extract just the fragment (e.g., "#atproto" from "did:plc:xxx#atproto")
+            $fragment = substr($methodId, strrpos($methodId, '#') + 1);
+            $verificationMethods[$fragment] = KeyFactory::decode_did_key($didKey);
         }
     }
     echo "::notice::Successfully decoded " . count($verificationMethods) . " verification methods\n";
+    echo "::notice::Verification method keys: " . implode(', ', array_keys($verificationMethods)) . "\n";
 
     // Get existing values
     echo "::notice::Extracting existing DID document values...\n";
