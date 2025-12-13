@@ -72,8 +72,13 @@ try {
     if (null === $lastOp) {
         throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
     }
+
+    echo "::group::Last Operation Details\n";
+    echo json_encode($lastOp, JSON_PRETTY_PRINT) . "\n";
+    echo "::endgroup::\n";
+
     $prevCid = $lastOp['cid'] ?? null;
-    echo "::notice::Last operation retrieved - CID: {$prevCid}\n";
+    echo "::notice::Last operation CID: {$prevCid}\n";
 
     echo "::group::Current DID Document\n";
     echo json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
