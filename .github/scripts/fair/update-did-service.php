@@ -77,12 +77,35 @@ try {
     echo json_encode($lastOp, JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
-    $prevCid = $lastOp['cid'] ?? null;
-    echo "::notice::Last operation CID: {$prevCid}\n";
+    // Reconstruct the PlcOperation from last operation to get its CID
+    // We need to decode the keys from the operation
+    echo "::notice::Computing CID from last operation...\n";
 
-    echo "::group::Current DID Document\n";
-    echo json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
-    echo "::endgroup::\n";
+    // Decode rotation keys
+    $lastRotationKeys = [];
+    foreach ($lastOp['rotationKeys'] ?? [] as $keyStr) {
+        $lastRotationKeys[] = KeyFactory::decode_did_key($keyStr);
+    }
+
+    // Decode verification methods
+    $lastVerificationMethods = [];
+    foreach ($lastOp['verificationMethods'] ?? [] as $id => $keyStr) {
+        $lastVerificationMethods[$id] = KeyFactory::decode_did_key($keyStr);
+    }
+
+    // Reconstruct the operation
+    $lastOperation = new PlcOperation(
+        type: $lastOp['type'] ?? 'plc_operation',
+        rotation_keys: $lastRotationKeys,
+        verification_methods: $lastVerificationMethods,
+        also_known_as: $lastOp['alsoKnownAs'] ?? [],
+        services: $lastOp['services'] ?? [],
+        prev: $lastOp['prev'] ?? null,
+    );
+
+    // Now we can get the CID
+    $prevCid = $lastOperation->get_cid();
+    echo "::notice::Computed CID from last operation: {$prevCid}\n";
 
     // Decode existing verification methods from rotationKeys (not verificationMethod)
     // The rotationKeys field contains the keys we need to preserve
