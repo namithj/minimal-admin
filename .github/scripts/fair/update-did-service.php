@@ -34,7 +34,7 @@ use FAIR\DID\Keys\KeyFactory;
 $did = getenv('DID');
 $rotationPrivate = getenv('ROTATION_PRIVATE');
 $metadataUrl = getenv('METADATA_URL');
-$prevCid = getenv('PREV_CID');
+$prevCid = getenv('PREV_CID') ?: null;
 
 // Validate required inputs
 if (empty($did)) {
@@ -67,38 +67,13 @@ try {
     $currentDoc = $client->resolve_did($did);
     echo "::notice::DID document retrieved successfully\n";
 
-    // Use the CID passed from create-did step
-    if (empty($prevCid)) {
-        echo "::warning::No previous CID provided, fetching from last operation...\n";
-        $lastOp = $client->get_last_operation($did);
-        if (null === $lastOp) {
-            throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
-        }
-        echo "::group::Last Operation Details\n";
-        echo json_encode($lastOp, JSON_PRETTY_PRINT) . "\n";
-        echo "::endgroup::\n";
-
-        // Reconstruct the PlcOperation from last operation to get its CID
-        $lastRotationKeys = [];
-        foreach ($lastOp['rotationKeys'] ?? [] as $keyStr) {
-            $lastRotationKeys[] = KeyFactory::decode_did_key($keyStr);
-        }
-        $lastVerificationMethods = [];
-        foreach ($lastOp['verificationMethods'] ?? [] as $id => $keyStr) {
-            $lastVerificationMethods[$id] = KeyFactory::decode_did_key($keyStr);
-        }
-        $lastOperation = new PlcOperation(
-            type: $lastOp['type'] ?? 'plc_operation',
-            rotation_keys: $lastRotationKeys,
-            verification_methods: $lastVerificationMethods,
-            also_known_as: $lastOp['alsoKnownAs'] ?? [],
-            services: $lastOp['services'] ?? [],
-            prev: $lastOp['prev'] ?? null,
-        );
-        $prevCid = $lastOperation->get_cid();
-        echo "::notice::Computed CID from last operation: {$prevCid}\n";
-    } else {
+    // Get the previous CID - use passed value or fetch from PLC directory
+    if (!empty($prevCid)) {
         echo "::notice::Using previous CID from create-did step: {$prevCid}\n";
+    } else {
+        echo "::notice::No previous CID provided, fetching from PLC directory...\n";
+        $prevCid = $client->get_previous_cid($did);
+        echo "::notice::Previous CID retrieved from PLC: {$prevCid}\n";
     }
     // Decode existing verification methods from rotationKeys (not verificationMethod)
     // The rotationKeys field contains the keys we need to preserve
