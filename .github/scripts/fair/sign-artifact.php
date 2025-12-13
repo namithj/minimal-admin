@@ -35,6 +35,7 @@ require_once $autoloadPath;
 
 use FAIR\DID\Crypto\DidCodec;
 use FAIR\DID\Keys\EdDsaKey;
+use FAIR\DID\PLC\PlcOperation;
 
 /**
  * Write output to GitHub Actions output file.
@@ -69,15 +70,20 @@ if (empty($artifactPath) || !file_exists($artifactPath)) {
 // Reconstruct verification key from private key
 $verificationKey = EdDsaKey::from_private($verificationPrivate);
 
-// Read artifact and compute hash
+// Read artifact and compute hash (as hex string, not binary)
 $artifactContents = file_get_contents($artifactPath);
-$hash = hash('sha256', $artifactContents, true);
+$hash = hash('sha256', $artifactContents, false);  // false = hex output
 
-// Sign the hash
-$signature = $verificationKey->sign($hash);
+// Sign the hash (returns hex signature)
+$signatureHex = $verificationKey->sign($hash);
 
-// Encode signature in multibase format
-$encodedSignature = DidCodec::encode_signature($signature);
+// Convert signature to base64url format (hex -> binary -> base64url)
+$signatureBinary = hex2bin($signatureHex);
+$signature = PlcOperation::base64url_encode($signatureBinary);
+
+// Also compute checksum for metadata
+$checksum = hash('sha256', $artifactContents);
 
 echo "::notice::Package signed successfully\n";
-write_output('signature', $encodedSignature);
+write_output('signature', $signature);
+write_output('checksum', "sha256:{$checksum}");

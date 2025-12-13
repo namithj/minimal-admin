@@ -108,13 +108,8 @@ jobs:
           # Download the release asset created by release.yml
           gh release download "${VERSION}" -p "${PLUGIN_NAME}.zip" -O "${ARTIFACT_PATH}"
 
-          # Calculate checksum of the actual release asset
-          CHECKSUM=$(sha256sum "${ARTIFACT_PATH}" | cut -d' ' -f1)
-
           echo "artifact_path=${ARTIFACT_PATH}" >> $GITHUB_OUTPUT
-          echo "checksum=sha256:${CHECKSUM}" >> $GITHUB_OUTPUT
           echo "::notice::Downloaded release asset: ${ARTIFACT_PATH}"
-          echo "::notice::Checksum: sha256:${CHECKSUM}"
 
       - name: Sign package artifact
         id: sign
@@ -129,7 +124,7 @@ jobs:
         env:
           DID: ${{ steps.did.outputs.did }}
           VERSION: ${{ steps.version.outputs.version }}
-          CHECKSUM: ${{ steps.download.outputs.checksum }}
+          CHECKSUM: ${{ steps.sign.outputs.checksum }}
           SIGNATURE: ${{ steps.sign.outputs.signature }}
           ARTIFACT_PATH: ${{ steps.download.outputs.artifact_path }}
           VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
