@@ -70,9 +70,9 @@ if (empty($verificationPrivate) || empty($verificationPublic)) {
     exit(1);
 }
 
-// Reconstruct keys from stored values
-$rotationKey = EcKey::from_encoded($rotationPrivate, $rotationPublic);
-$verificationKey = EdDsaKey::from_encoded($verificationPrivate, $verificationPublic);
+// Reconstruct keys from stored private keys
+$rotationKey = EcKey::from_private($rotationPrivate);
+$verificationKey = EdDsaKey::from_private($verificationPrivate);
 
 if ($didExists && !empty($existingDid)) {
     echo "::notice::Using existing DID: {$existingDid}\n";

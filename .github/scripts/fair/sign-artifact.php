@@ -59,8 +59,8 @@ if (empty($artifactPath) || !file_exists($artifactPath)) {
     exit(1);
 }
 
-// Reconstruct verification key
-$verificationKey = EdDsaKey::from_encoded($verificationPrivate, $verificationPublic);
+// Reconstruct verification key from private key
+$verificationKey = EdDsaKey::from_private($verificationPrivate);
 
 // Read artifact and compute hash
 $artifactContents = file_get_contents($artifactPath);

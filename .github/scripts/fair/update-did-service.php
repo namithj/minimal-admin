@@ -49,7 +49,8 @@ if (empty($rotationPrivate) || empty($rotationPublic)) {
     exit(1);
 }
 
-$rotationKey = EcKey::from_encoded($rotationPrivate, $rotationPublic);
+// Reconstruct rotation key from private key
+$rotationKey = EcKey::from_private($rotationPrivate);
 $client = new PlcClient();
 
 // Build the FAIR service endpoint
