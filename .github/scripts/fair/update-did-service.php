@@ -52,37 +52,53 @@ if (empty($metadataUrl)) {
 }
 
 // Reconstruct rotation key from private key
+echo "::notice::Reconstructing rotation key from private key...\n";
 $rotationKey = EcKey::from_private($rotationPrivate);
+echo "::notice::Rotation key reconstructed successfully\n";
+
+echo "::notice::Initializing PLC client...\n";
 $client = new PlcClient();
+echo "::notice::PLC client initialized\n";
 
 try {
     // Get current DID document and last operation
-    echo "::notice::Fetching current DID document...\n";
+    echo "::notice::Fetching current DID document for: {$did}\n";
     $currentDoc = $client->resolve_did($did);
+    echo "::notice::DID document retrieved successfully\n";
+
+    echo "::notice::Fetching last operation...\n";
     $lastOp = $client->get_last_operation($did);
 
     if (null === $lastOp) {
         throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
     }
+    echo "::notice::Last operation retrieved - CID: " . ($lastOp['cid'] ?? 'null') . "\n";
 
     echo "::group::Current DID Document\n";
     echo json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
     // Decode existing verification methods
+    echo "::notice::Decoding existing verification methods...\n";
     $verificationMethods = [];
     $methodsData = $currentDoc['verificationMethod'] ?? [];
+    echo "::notice::Found " . count($methodsData) . " verification methods in current document\n";
+
     foreach ($methodsData as $method) {
         $methodId = $method['id'] ?? '';
         $publicKeyMultibase = $method['publicKeyMultibase'] ?? '';
         if (!empty($publicKeyMultibase)) {
+            echo "::notice::Decoding verification method: {$methodId}\n";
             $verificationMethods[$methodId] = KeyFactory::decode_did_key($publicKeyMultibase);
         }
     }
+    echo "::notice::Successfully decoded " . count($verificationMethods) . " verification methods\n";
 
     // Get existing values
+    echo "::notice::Extracting existing DID document values...\n";
     $alsoKnownAs = $currentDoc['alsoKnownAs'] ?? [];
     $services = $currentDoc['services'] ?? [];
+    echo "::notice::Found " . count($alsoKnownAs) . " handles and " . count($services) . " existing services\n";
 
     // Update services with FAIR endpoint
     $services[] = [
@@ -122,14 +138,24 @@ try {
     echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
 
     // Verify the update
+    echo "::notice::Verifying update by fetching DID document again...\n";
     $updatedDoc = $client->resolve_did($did);
+    echo "::notice::Updated DID document retrieved\n";
 
     echo "::group::Updated DID Document\n";
     echo json_encode($updatedDoc, JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
+    $serviceCount = isset($updatedDoc['service']) ? count($updatedDoc['service']) : 0;
+    echo "::notice::Services in updated document: {$serviceCount}\n";
+
     if (isset($updatedDoc['service']) && !empty($updatedDoc['service'])) {
         echo "::notice::Services array updated successfully\n";
+        foreach ($updatedDoc['service'] as $service) {
+            $serviceId = $service['id'] ?? 'unknown';
+            $serviceType = $service['type'] ?? 'unknown';
+            echo "::notice::Service found - ID: {$serviceId}, Type: {$serviceType}\n";
+        }
     } else {
         echo "::warning::Services array is empty after update\n";
     }
