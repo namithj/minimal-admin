@@ -102,15 +102,34 @@ if ($keysExist) {
     write_output('verification_public', $newVerificationPublic, true);
     write_output('did_exists', 'false');
 
-    // Print instructions for adding secrets
-    echo "\n======================================================\n";
-    echo "IMPORTANT: Add these secrets to your GitHub repository:\n";
-    echo "======================================================\n\n";
-    echo "FAIR_ROTATION_KEY_PRIVATE:\n{$newRotationPrivate}\n\n";
-    echo "FAIR_ROTATION_KEY_PUBLIC:\n{$newRotationPublic}\n\n";
-    echo "FAIR_VERIFICATION_KEY_PRIVATE:\n{$newVerificationPrivate}\n\n";
-    echo "FAIR_VERIFICATION_KEY_PUBLIC:\n{$newVerificationPublic}\n\n";
-    echo "======================================================\n";
-    echo "After adding these secrets, re-run this workflow.\n";
-    echo "======================================================\n";
+    // Mask the private keys in logs for security
+    echo "::add-mask::{$newRotationPrivate}\n";
+    echo "::add-mask::{$newVerificationPrivate}\n";
+
+    // Write keys to step summary (not logs) for user to copy
+    $summaryFile = getenv('GITHUB_STEP_SUMMARY');
+    if ($summaryFile) {
+        $summary = "\n## 🔐 CRYPTOGRAPHIC KEYS GENERATED\n\n";
+        $summary .= "⚠️ **IMPORTANT**: These keys are shown only once. Copy them now!\n\n";
+        $summary .= "### Setup Instructions\n\n";
+        $summary .= "1. Go to your repository **Settings**\n";
+        $summary .= "2. Navigate to **Secrets and variables** → **Actions**\n";
+        $summary .= "3. Click **New repository secret** and add each of the following:\n\n";
+        $summary .= "#### FAIR_ROTATION_KEY_PRIVATE\n";
+        $summary .= "```\n{$newRotationPrivate}\n```\n\n";
+        $summary .= "#### FAIR_ROTATION_KEY_PUBLIC\n";
+        $summary .= "```\n{$newRotationPublic}\n```\n\n";
+        $summary .= "#### FAIR_VERIFICATION_KEY_PRIVATE\n";
+        $summary .= "```\n{$newVerificationPrivate}\n```\n\n";
+        $summary .= "#### FAIR_VERIFICATION_KEY_PUBLIC\n";
+        $summary .= "```\n{$newVerificationPublic}\n```\n\n";
+        $summary .= "4. After adding all secrets, **re-run this workflow** to complete the publishing process.\n\n";
+        $summary .= "---\n\n";
+        $summary .= "ℹ️ These keys are **NOT** visible in the workflow logs for security reasons.\n";
+        
+        file_put_contents($summaryFile, $summary, FILE_APPEND);
+    }
+
+    echo "::notice::Cryptographic keys have been generated and added to the step summary.\n";
+    echo "::notice::Keys are masked in logs for security.\n";
 }
