@@ -8,9 +8,7 @@
  * Required environment variables:
  * - DID
  * - ROTATION_PRIVATE
- * - ROTATION_PUBLIC
- * - VERIFICATION_PUBLIC
- * - REPO_URL
+ * - METADATA_URL
  *
  * @package MinimalAdmin
  */
@@ -59,6 +57,7 @@ $client = new PlcClient();
 
 try {
     // Get current DID document and last operation
+    echo "::notice::Fetching current DID document...\n";
     $currentDoc = $client->resolve_did($did);
     $lastOp = $client->get_last_operation($did);
 
@@ -66,7 +65,7 @@ try {
         throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
     }
 
-    echo "::group::Current DID Document (Before Update)\n";
+    echo "::group::Current DID Document\n";
     echo json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
@@ -85,19 +84,19 @@ try {
     $alsoKnownAs = $currentDoc['alsoKnownAs'] ?? [];
     $services = $currentDoc['services'] ?? [];
 
-    echo "::group::Services Configuration\n";
-    echo "Existing services: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
-
     // Update services with FAIR endpoint
-    $services['fairpm_repo'] = [
+    $services[] = [
+		'id' => "#fairpm_repo",
         'type' => 'FairPackageManagementRepo',
         'endpoint' => $metadataUrl,
     ];
 
-    echo "Updated services: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
+    echo "::group::Update Details\n";
+    echo "Services to update: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
+    echo "Previous operation CID: " . ($lastOp['cid'] ?? 'null') . "\n";
     echo "::endgroup::\n";
 
-    // Build and sign update operation
+    // Build update operation
     $operation = new PlcOperation(
         type: 'plc_operation',
         rotation_keys: [$rotationKey],
@@ -107,6 +106,8 @@ try {
         prev: $lastOp['cid'] ?? null,
     );
 
+    // Sign the operation
+    echo "::notice::Signing operation...\n";
     $signedOp = $operation->sign($rotationKey);
     $operationArray = (array) $signedOp->jsonSerialize();
 
@@ -115,6 +116,7 @@ try {
     echo "::endgroup::\n";
 
     // Submit update to PLC directory
+    echo "::notice::Submitting update to PLC directory...\n";
     $client->update_did($did, $operationArray);
 
     echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
@@ -122,20 +124,10 @@ try {
     // Verify the update
     $updatedDoc = $client->resolve_did($did);
 
-    echo "::group::Updated DID Document (After Update)\n";
+    echo "::group::Updated DID Document\n";
     echo json_encode($updatedDoc, JSON_PRETTY_PRINT) . "\n";
     echo "::endgroup::\n";
 
-    $signedOp = $operation->sign($rotationKey);
-    $operationArray = (array) $signedOp->jsonSerialize();
-
-    // Submit update to PLC directory
-    $client->update_did($did, $operationArray);
-
-    echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
-
-    // Verify the update
-    $updatedDoc = $client->resolve_did($did);
     if (isset($updatedDoc['service']) && !empty($updatedDoc['service'])) {
         echo "::notice::Services array updated successfully\n";
     } else {
