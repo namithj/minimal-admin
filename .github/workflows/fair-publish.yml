@@ -80,22 +80,7 @@ jobs:
       - name: Fail if keys need to be added (manual setup required)
         if: steps.keys.outputs.keys_exist == 'false'
         run: |
-          echo "::error::======================================================"
-          echo "::error::CRYPTOGRAPHIC KEYS GENERATED"
-          echo "::error::======================================================"
-          echo "::error::"
-          echo "::error::🔐 Keys have been generated and are available in the Step Summary."
-          echo "::error::📋 Click on the Summary tab to view and copy the keys."
-          echo "::error::"
-          echo "::error::⚠️  IMPORTANT: Keys are NOT shown in logs for security."
-          echo "::error::"
-          echo "::error::Next Steps:"
-          echo "::error::1. Click 'Summary' at the top of this workflow run"
-          echo "::error::2. Copy each key from the summary"
-          echo "::error::3. Add them as repository secrets in Settings"
-          echo "::error::4. Re-run this workflow"
-          echo "::error::"
-          echo "::error::======================================================"
+          echo "Keys must be generated locally for security. See error above for instructions."
           exit 1
 
       - name: Create or update PLC DID
