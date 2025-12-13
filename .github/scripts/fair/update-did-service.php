@@ -63,7 +63,6 @@ $client = new PlcClient();
 echo "::group::DID Service Update Debug Information\n";
 echo "DID: {$did}\n";
 echo "Metadata URL: {$metadataUrl}\n";
-echo "Service to add: " . json_encode($service, JSON_PRETTY_PRINT) . "\n";
 
 try {
     // Get current DID document
@@ -82,29 +81,46 @@ try {
     // Decode existing rotation keys
     $rotationKeysArray = [];
     $rotationKeyData = $currentDoc['rotationKeys'] ?? [$rotationPublic];
+    echo "Raw rotation keys data: " . json_encode($rotationKeyData, JSON_PRETTY_PRINT) . "\n";
     foreach ($rotationKeyData as $keyStr) {
-        $rotationKeysArray[] = KeyFactory::decode_did_key($keyStr);
+        try {
+            $rotationKeysArray[] = KeyFactory::decode_did_key($keyStr);
+        } catch (\Exception $e) {
+            echo "Warning: Could not decode rotation key '{$keyStr}': " . $e->getMessage() . "\n";
+            // If decoding fails, just use the public key we have
+            $rotationKeysArray[] = KeyFactory::decode_did_key($rotationPublic);
+            break;
+        }
     }
     echo "Rotation keys count: " . count($rotationKeysArray) . "\n";
 
     // Decode existing verification methods
     $verificationMethods = [];
-    $methodsData = $currentDoc['verificationMethods'] ?? [];
-    foreach ($methodsData as $id => $keyStr) {
-        $verificationMethods[$id] = KeyFactory::decode_did_key($keyStr);
+    $methodsData = $currentDoc['verificationMethod'] ?? [];  // Note: it's 'verificationMethod' not 'verificationMethods'
+    echo "Raw verification methods data: " . json_encode($methodsData, JSON_PRETTY_PRINT) . "\n";
+    foreach ($methodsData as $method) {
+        try {
+            $methodId = $method['id'] ?? '';
+            $publicKeyMultibase = $method['publicKeyMultibase'] ?? '';
+            if (!empty($publicKeyMultibase)) {
+                $verificationMethods[$methodId] = KeyFactory::decode_did_key($publicKeyMultibase);
+            }
+        } catch (\Exception $e) {
+            echo "Warning: Could not decode verification method: " . $e->getMessage() . "\n";
+        }
     }
     echo "Verification methods count: " . count($verificationMethods) . "\n";
 
     // Get existing values
     $alsoKnownAs = $currentDoc['alsoKnownAs'] ?? [];
     $services = $currentDoc['services'] ?? [];
-    
+
     // Update services with FAIR endpoint
     $services['fairpm_repo'] = [
         'type' => 'FairPackageManagementRepo',
         'endpoint' => $metadataUrl,
     ];
-    
+
     echo "\nBuilding update operation...\n";
     echo "Services to include: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
 
@@ -123,7 +139,7 @@ try {
     $signedOp = $operation->sign($rotationKey);
     $operationArray = (array) $signedOp->jsonSerialize();
     echo "Signed Operation: " . json_encode($operationArray, JSON_PRETTY_PRINT) . "\n";
-    
+
     echo "\nSubmitting update to PLC directory...\n";
     $response = $client->update_did($did, $operationArray);
 
@@ -132,12 +148,12 @@ try {
     if (!empty($response)) {
         echo "::notice::PLC Response: " . json_encode($response, JSON_PRETTY_PRINT) . "\n";
     }
-    
+
     // Verify the update by fetching the DID document again
     echo "\n::group::Verifying DID Update\n";
     $updatedDoc = $client->resolve_did($did);
     echo "Updated DID Document: " . json_encode($updatedDoc, JSON_PRETTY_PRINT) . "\n";
-    
+
     if (isset($updatedDoc['service']) && !empty($updatedDoc['service'])) {
         echo "::endgroup::\n";
         echo "::notice::✅ Services array updated successfully\n";
