@@ -139,9 +139,12 @@ if ($didExists && !empty($existingDid)) {
     // Submit to PLC directory
     $client = new PlcClient();
     try {
-        $operationArray = $signedOperation->jsonSerialize();
+        $operationArray = (array) $signedOperation->jsonSerialize();
         $response = $client->create_did($operationArray);
         echo "::notice::DID submitted to PLC directory successfully\n";
+        if (!empty($response)) {
+            echo "::notice::PLC Response: " . json_encode($response) . "\n";
+        }
     } catch (Exception $e) {
         echo "::warning::Could not submit to PLC directory: " . $e->getMessage() . "\n";
         echo "::notice::DID can still be used locally\n";
