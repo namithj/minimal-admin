@@ -97,8 +97,24 @@ if ($didExists && !empty($existingDid)) {
     // Generate DID from signed operation
     $did = DidCodec::generate_plc_did($signedOperation);
 
-    echo "::notice::Generated DID: {$did}\n";
-    echo "::warning::Please add FAIR_DID secret with value: {$did}\n";
+    echo "::notice::✅ Generated DID: {$did}\n";
+    echo "\n";
+    echo "╔═══════════════════════════════════════════════════════════════════╗\n";
+    echo "║  🔑 ACTION REQUIRED: Save Your DID as a GitHub Secret            ║\n";
+    echo "╚═══════════════════════════════════════════════════════════════════╝\n";
+    echo "\n";
+    echo "Your DID has been created: {$did}\n";
+    echo "\n";
+    echo "To complete setup and enable future publishes, add this as a secret:\n";
+    echo "\n";
+    echo "1. Go to: Settings → Secrets and variables → Actions\n";
+    echo "2. Click 'New repository secret'\n";
+    echo "3. Name: FAIR_DID\n";
+    echo "4. Value: {$did}\n";
+    echo "5. Click 'Add secret'\n";
+    echo "\n";
+    echo "This step is only needed once. Future publishes will use this DID.\n";
+    echo "\n";
 
     // Submit to PLC directory
     $client = new PlcClient();
