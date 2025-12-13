@@ -68,7 +68,7 @@ $service = [
 
 try {
     // Get current DID document
-    $currentDoc = $client->get_did_document($did);
+    $currentDoc = $client->resolve_did($did);
 
     // Create update operation
     $updateOp = DidCodec::create_update_operation(
@@ -81,9 +81,13 @@ try {
 
     // Sign and submit
     $signedOp = DidCodec::sign_plc_operation($updateOp, $rotationKey);
-    $client->submit_operation($did, $signedOp);
+    $operationArray = (array) $signedOp->jsonSerialize();
+    $response = $client->update_did($did, $operationArray);
 
     echo "::notice::DID updated with FAIR service endpoint\n";
+    if (!empty($response)) {
+        echo "::notice::Update Response: " . json_encode($response) . "\n";
+    }
 } catch (Exception $e) {
     echo "::warning::Could not update DID service: " . $e->getMessage() . "\n";
 }
