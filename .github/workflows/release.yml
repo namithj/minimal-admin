@@ -1,111 +1,47 @@
-name: Build Release Zip
+name: Upload Release Asset
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version tag (e.g., 1.0.0)'
-        required: false
-        default: ''
+  push:
+    tags:
+      - "**"
+
+permissions:
+  contents: read
 
 jobs:
   build:
-    name: Build and Package Plugin
+    name: Upload Release Asset
     runs-on: ubuntu-latest
-    
+    permissions:
+      attestations: write
+      id-token: write
+      contents: write
+
     steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Get tag
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      - name: Install Node dependencies
-        run: npm ci
+      - name: Build project
+        run: git archive -o /tmp/${{ github.event.repository.name }}.zip --prefix=${{ github.event.repository.name }}/ ${{ steps.tag.outputs.tag }}
 
-      - name: Build assets
-        run: npm run build
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-          tools: composer:v2
-
-      - name: Install Composer dependencies (production)
-        run: composer install --no-dev --optimize-autoloader --prefer-dist
-
-      - name: Get version
-        id: get_version
-        run: |
-          if [ "${{ github.event_name }}" = "release" ]; then
-            VERSION="${{ github.event.release.tag_name }}"
-          elif [ -n "${{ github.event.inputs.version }}" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-          else
-            VERSION=$(grep -oP "Version:\s*\K[0-9.]+" minimal-admin.php)
-          fi
-          # Remove 'v' prefix if present
-          VERSION="${VERSION#v}"
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Building version: $VERSION"
-
-      - name: Create plugin directory
-        run: |
-          mkdir -p build/minimal-admin
-          
-          # Copy plugin files (excluding dev files)
-          rsync -av --progress . build/minimal-admin \
-            --exclude='.git' \
-            --exclude='.github' \
-            --exclude='node_modules' \
-            --exclude='src' \
-            --exclude='scripts' \
-            --exclude='.gitignore' \
-            --exclude='.gitattributes' \
-            --exclude='package.json' \
-            --exclude='package-lock.json' \
-            --exclude='composer.json' \
-            --exclude='composer.lock' \
-            --exclude='phpcs.xml.dist' \
-            --exclude='phpunit.xml.dist' \
-            --exclude='tests' \
-            --exclude='*.md' \
-            --exclude='*.map' \
-            --exclude='build' \
-            --exclude='.editorconfig' \
-            --exclude='.phpcs.xml.dist' \
-            --exclude='Gruntfile.js' \
-            --exclude='webpack.config.js' \
-            --exclude='vite.config.js' \
-            --exclude='.eslintrc*' \
-            --exclude='.prettierrc*' \
-            --exclude='.stylelintrc*'
-
-      - name: Create zip file
-        run: |
-          cd build
-          zip -r minimal-admin-${{ steps.get_version.outputs.version }}.zip minimal-admin
-          mv minimal-admin-${{ steps.get_version.outputs.version }}.zip ../
-          cd ..
-          echo "Created: minimal-admin-${{ steps.get_version.outputs.version }}.zip"
-          ls -la minimal-admin-*.zip
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: minimal-admin-${{ steps.get_version.outputs.version }}
-          path: minimal-admin-${{ steps.get_version.outputs.version }}.zip
-
-      - name: Upload to Release
-        if: github.event_name == 'release'
-        uses: softprops/action-gh-release@v1
-        with:
-          files: minimal-admin-${{ steps.get_version.outputs.version }}.zip
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8 # v2.3.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: /tmp/${{ github.event.repository.name }}.zip
+
+      - name: Build provenance attestation
+        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        with:
+          subject-path: /tmp/${{ github.event.repository.name }}.zip
