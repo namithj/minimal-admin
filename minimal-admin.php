@@ -3,9 +3,9 @@
  * Plugin Name: Minimal Admin
  * Plugin URI: https://github.com/smartlogix/minimal-admin
  * Description: Adds minimal, clean styling overrides to WordPress admin with updated colors, borders, and focus states while preserving core layout.
- * Version: 1.0.0
+ * Version: 0.0.1
  * Author: Smartlogix
- * Author URI: https://smartlogix.co.za
+ * Author URI: https://smartlogix.co.in
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain: minimal-admin
@@ -14,12 +14,12 @@
  * Requires PHP: 7.4
  *
  * @package    MinimalAdmin
- * @author     Smartlogix <info@smartlogix.co.za>
+ * @author     Smartlogix <admin@smartlogix.co.in>
  * @license    GPL-2.0+ http://www.gnu.org/licenses/gpl-2.0.txt
  * @link       https://github.com/smartlogix/minimal-admin
- * @since      1.0.0
+ * @since      0.0.1
  * @category   WordPress
- * @version    1.0.0
+ * @version    0.0.1
  */
 
 // If this file is called directly, abort.
@@ -30,7 +30,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Plugin version.
  */
-define( 'MINIMAL_ADMIN_VERSION', '1.0.0' );
+define( 'MINIMAL_ADMIN_VERSION', '0.0.1' );
 
 /**
  * Plugin directory URL.
@@ -44,7 +44,7 @@ define( 'MINIMAL_ADMIN_URL', plugin_dir_url( __FILE__ ) );
  * It does NOT replace core styles - it enhances them with minimal, clean
  * colors, improved focus states, and subtle visual refinements.
  *
- * @since 1.0.0
+ * @since 0.0.1
  */
 class Minimal_Admin {
 
