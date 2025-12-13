@@ -98,7 +98,7 @@ if ($didExists && !empty($existingDid)) {
     $did = DidCodec::generate_plc_did($signedOperation);
 
     echo "::notice::✅ Generated DID: {$did}\n";
-    
+
     // Add to step summary for easy visibility
     $summaryFile = getenv('GITHUB_STEP_SUMMARY');
     if ($summaryFile) {
@@ -115,7 +115,7 @@ if ($didExists && !empty($existingDid)) {
         $summary .= "This is only needed once. Future publishes will use this stored DID.\n";
         file_put_contents($summaryFile, $summary, FILE_APPEND);
     }
-    
+
     echo "\n";
     echo "╔═══════════════════════════════════════════════════════════════════╗\n";
     echo "║  🔑 ACTION REQUIRED: Save Your DID as a GitHub Variable          ║\n";
@@ -139,7 +139,8 @@ if ($didExists && !empty($existingDid)) {
     // Submit to PLC directory
     $client = new PlcClient();
     try {
-        $client->submit_operation($did, $signedOperation);
+        $operationArray = $signedOperation->jsonSerialize();
+        $response = $client->create_did($operationArray);
         echo "::notice::DID submitted to PLC directory successfully\n";
     } catch (Exception $e) {
         echo "::warning::Could not submit to PLC directory: " . $e->getMessage() . "\n";
