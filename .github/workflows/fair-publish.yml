@@ -150,7 +150,6 @@ jobs:
           echo "::notice::✅ Metadata uploaded to: ${METADATA_URL}"
 
       - name: Update DID with FAIR service
-        if: steps.did.outputs.created == 'true'
         env:
           DID: ${{ steps.did.outputs.did }}
           ROTATION_PRIVATE: ${{ steps.keys.outputs.rotation_private }}
@@ -158,18 +157,4 @@ jobs:
           VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
           METADATA_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/fair-metadata.json
         run: php .github/scripts/fair/update-did-service.php
-
-      - name: Show metadata for workflow_dispatch
-        if: github.event_name == 'workflow_dispatch'
-        run: |
-          echo "::group::Generated Metadata"
-          cat /tmp/fair-metadata.json | jq .
-          echo "::endgroup::"
-
-      - name: Upload metadata artifact
-        if: github.event_name == 'workflow_dispatch'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: fair-metadata
-          path: /tmp/fair-metadata.json
 
