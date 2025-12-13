@@ -75,7 +75,7 @@ jobs:
           FAIR_VERIFICATION_KEY_PRIVATE: ${{ secrets.FAIR_VERIFICATION_KEY_PRIVATE }}
           FAIR_VERIFICATION_KEY_PUBLIC: ${{ secrets.FAIR_VERIFICATION_KEY_PUBLIC }}
           FAIR_DID: ${{ secrets.FAIR_DID }}
-        run: php .github/scripts/fair/manage-keys.php "/tmp/did-manager/vendor/autoload.php"
+        run: php .github/scripts/fair/manage-keys.php
 
       - name: Fail if keys need to be added (manual setup required)
         if: steps.keys.outputs.keys_exist == 'false'
@@ -94,7 +94,7 @@ jobs:
           EXISTING_DID: ${{ steps.keys.outputs.did }}
           DID_EXISTS: ${{ steps.keys.outputs.did_exists }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        run: php .github/scripts/fair/create-did.php "/tmp/did-manager/vendor/autoload.php"
+        run: php .github/scripts/fair/create-did.php
 
       - name: Download release asset
         id: download
@@ -122,7 +122,7 @@ jobs:
           VERIFICATION_PRIVATE: ${{ steps.keys.outputs.verification_private }}
           VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
           ARTIFACT_PATH: ${{ steps.download.outputs.artifact_path }}
-        run: php .github/scripts/fair/sign-artifact.php "/tmp/did-manager/vendor/autoload.php"
+        run: php .github/scripts/fair/sign-artifact.php
 
       - name: Generate FAIR metadata
         id: metadata
@@ -134,7 +134,7 @@ jobs:
           ARTIFACT_PATH: ${{ steps.download.outputs.artifact_path }}
           VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        run: php .github/scripts/fair/generate-metadata.php "/tmp/did-manager/vendor/autoload.php"
+        run: php .github/scripts/fair/generate-metadata.php
 
       - name: Update DID with FAIR service
         if: steps.did.outputs.created == 'true'
@@ -144,7 +144,7 @@ jobs:
           ROTATION_PUBLIC: ${{ steps.keys.outputs.rotation_public }}
           VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        run: php .github/scripts/fair/update-did-service.php "/tmp/did-manager/vendor/autoload.php"
+        run: php .github/scripts/fair/update-did-service.php
 
       - name: Upload metadata to existing release
         if: github.event_name == 'workflow_run'

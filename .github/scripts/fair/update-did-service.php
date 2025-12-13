@@ -17,8 +17,8 @@
 
 declare(strict_types=1);
 
-// Autoload path is passed as first argument or defaults to /tmp/did-manager
-$autoloadPath = $argv[1] ?? '/tmp/did-manager/vendor/autoload.php';
+// Autoload path - did-manager is cloned to /tmp/did-manager in GitHub Actions
+$autoloadPath = '/tmp/did-manager/vendor/autoload.php';
 
 if (!file_exists($autoloadPath)) {
     echo "::error::Autoloader not found at {$autoloadPath}\n";
@@ -28,7 +28,7 @@ if (!file_exists($autoloadPath)) {
 require_once $autoloadPath;
 
 use FAIR\DID\Crypto\DidCodec;
-use FAIR\DID\Plc\PlcClient;
+use FAIR\DID\PLC\PlcClient;
 use FAIR\DID\Keys\EcKey;
 
 // Get environment variables

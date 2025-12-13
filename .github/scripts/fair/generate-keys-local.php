@@ -44,24 +44,24 @@ if (file_exists($didManagerPath)) {
 } else {
     echo "⚠️  FAIR DID Manager not found locally.\n";
     echo "   Cloning from GitHub...\n\n";
-    
+
     $cloneCmd = 'git clone --branch initial-implementation --depth 1 https://github.com/fairpm/did-manager.git /tmp/did-manager 2>&1';
     exec($cloneCmd, $output, $returnCode);
-    
+
     if ($returnCode !== 0) {
         echo "❌ ERROR: Failed to clone DID Manager.\n";
         echo "   Please install it manually or check your internet connection.\n\n";
         exit(1);
     }
-    
+
     echo "   Installing dependencies...\n";
     exec('cd /tmp/did-manager && composer install --no-dev --prefer-dist --no-progress 2>&1', $output, $returnCode);
-    
+
     if ($returnCode !== 0) {
         echo "❌ ERROR: Failed to install dependencies.\n\n";
         exit(1);
     }
-    
+
     require_once $didManagerPath;
 }
 
@@ -74,17 +74,17 @@ echo "🔐 Generating cryptographic keys...\n\n";
 try {
     // Generate secp256k1 key pair for rotation
     $rotationKey = DidCodec::generate_key_pair();
-    
+
     // Generate Ed25519 key pair for verification
     $verificationKey = DidCodec::generate_ed25519_key_pair();
-    
+
     $rotationPrivate = $rotationKey->encode_private();
     $rotationPublic = $rotationKey->encode_public();
     $verificationPrivate = $verificationKey->encode_private();
     $verificationPublic = $verificationKey->encode_public();
-    
+
     echo "✅ Keys generated successfully!\n\n";
-    
+
 } catch (Exception $e) {
     echo "❌ ERROR: Failed to generate keys.\n";
     echo "   {$e->getMessage()}\n\n";
