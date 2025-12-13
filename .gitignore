@@ -5,10 +5,6 @@ vendor/
 # Build output (uncomment if you want to commit compiled CSS)
 # dist/
 
-# Package manager files
-package-lock.json
-composer.lock
-
 # IDE and editor files
 .idea/
 .vscode/
