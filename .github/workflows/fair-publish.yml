@@ -147,7 +147,7 @@ jobs:
           gh release upload "${VERSION}" /tmp/fair-metadata.json --clobber
 
           METADATA_URL="${{ github.server_url }}/${{ github.repository }}/releases/download/${VERSION}/fair-metadata.json"
-          echo "::notice::✅ Metadata uploaded to: ${METADATA_URL}"
+          echo "::notice::Metadata uploaded to: ${METADATA_URL}"
 
       - name: Update DID with FAIR service
         env:

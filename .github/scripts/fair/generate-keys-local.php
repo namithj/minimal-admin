@@ -23,14 +23,14 @@ echo "\n";
 
 // Check if running in GitHub Actions
 if (getenv('GITHUB_ACTIONS') === 'true') {
-    echo "❌ ERROR: This script should NOT be run in GitHub Actions!\n";
+    echo "ERROR: This script should NOT be run in GitHub Actions!\n";
     echo "   Run it locally on your machine instead.\n\n";
     exit(1);
 }
 
 // Check for composer dependencies
 if (!file_exists(__DIR__ . '/../../../vendor/autoload.php')) {
-    echo "❌ ERROR: Dependencies not installed.\n";
+    echo "ERROR: Dependencies not installed.\n";
     echo "   Please run: composer install\n\n";
     exit(1);
 }
@@ -42,14 +42,14 @@ $didManagerPath = '/tmp/did-manager/vendor/autoload.php';
 if (file_exists($didManagerPath)) {
     require_once $didManagerPath;
 } else {
-    echo "⚠️  FAIR DID Manager not found locally.\n";
+    echo "WARNING: FAIR DID Manager not found locally.\n";
     echo "   Cloning from GitHub...\n\n";
 
     $cloneCmd = 'git clone --branch initial-implementation --depth 1 https://github.com/fairpm/did-manager.git /tmp/did-manager 2>&1';
     exec($cloneCmd, $output, $returnCode);
 
     if ($returnCode !== 0) {
-        echo "❌ ERROR: Failed to clone DID Manager.\n";
+        echo "ERROR: Failed to clone DID Manager.\n";
         echo "   Please install it manually or check your internet connection.\n\n";
         exit(1);
     }
@@ -58,7 +58,7 @@ if (file_exists($didManagerPath)) {
     exec('cd /tmp/did-manager && composer install --no-dev --prefer-dist --no-progress 2>&1', $output, $returnCode);
 
     if ($returnCode !== 0) {
-        echo "❌ ERROR: Failed to install dependencies.\n\n";
+        echo "ERROR: Failed to install dependencies.\n\n";
         exit(1);
     }
 
@@ -83,10 +83,10 @@ try {
     $verificationPrivate = $verificationKey->encode_private();
     $verificationPublic = $verificationKey->encode_public();
 
-    echo "✅ Keys generated successfully!\n\n";
+    echo "Keys generated successfully!\n\n";
 
 } catch (Exception $e) {
-    echo "❌ ERROR: Failed to generate keys.\n";
+    echo "ERROR: Failed to generate keys.\n";
     echo "   {$e->getMessage()}\n\n";
     exit(1);
 }
@@ -122,7 +122,7 @@ echo "────────────────────────�
 echo $verificationPublic . "\n\n";
 
 echo "╔════════════════════════════════════════════════════════════╗\n";
-echo "║  ⚠️  IMPORTANT SECURITY NOTES                              ║\n";
+echo "║  IMPORTANT SECURITY NOTES                                  ║\n";
 echo "╚════════════════════════════════════════════════════════════╝\n";
 echo "\n";
 echo "• These keys were generated on YOUR local machine\n";
@@ -131,5 +131,5 @@ echo "• Keep the PRIVATE keys secure - never share them\n";
 echo "• After copying to GitHub Secrets, clear your terminal history\n";
 echo "• You can delete /tmp/did-manager after setup\n";
 echo "\n";
-echo "✅ Once all secrets are added, run the workflow on GitHub!\n";
+echo "Once all secrets are added, run the workflow on GitHub!\n";
 echo "\n";
