@@ -89,7 +89,9 @@ try {
         $publicKeyMultibase = $method['publicKeyMultibase'] ?? '';
         if (!empty($publicKeyMultibase)) {
             echo "::notice::Decoding verification method: {$methodId}\n";
-            $verificationMethods[$methodId] = KeyFactory::decode_did_key($publicKeyMultibase);
+            // Construct full did:key URI from multibase key
+            $didKey = 'did:key:' . $publicKeyMultibase;
+            $verificationMethods[$methodId] = KeyFactory::decode_did_key($didKey);
         }
     }
     echo "::notice::Successfully decoded " . count($verificationMethods) . " verification methods\n";
