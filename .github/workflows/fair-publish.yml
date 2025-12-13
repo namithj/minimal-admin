@@ -131,16 +131,6 @@ jobs:
           REPO_URL: ${{ github.server_url }}/${{ github.repository }}
         run: php .github/scripts/fair/generate-metadata.php
 
-      - name: Update DID with FAIR service
-        if: steps.did.outputs.created == 'true'
-        env:
-          DID: ${{ steps.did.outputs.did }}
-          ROTATION_PRIVATE: ${{ steps.keys.outputs.rotation_private }}
-          ROTATION_PUBLIC: ${{ steps.keys.outputs.rotation_public }}
-          VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
-          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
-        run: php .github/scripts/fair/update-did-service.php
-
       - name: Upload metadata to existing release
         if: github.event_name == 'workflow_run'
         env:
@@ -149,6 +139,16 @@ jobs:
         run: |
           # Upload to the existing release created by release.yml
           gh release upload "${VERSION}" /tmp/fair-metadata.json --clobber
+
+      - name: Update DID with FAIR service
+        if: steps.did.outputs.created == 'true'
+        env:
+          DID: ${{ steps.did.outputs.did }}
+          ROTATION_PRIVATE: ${{ steps.keys.outputs.rotation_private }}
+          ROTATION_PUBLIC: ${{ steps.keys.outputs.rotation_public }}
+          VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
+          METADATA_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/fair-metadata.json
+        run: php .github/scripts/fair/update-did-service.php
 
       - name: Upload metadata artifact
         if: github.event_name == 'workflow_dispatch'

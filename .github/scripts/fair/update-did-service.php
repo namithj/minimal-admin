@@ -36,7 +36,7 @@ $did = getenv('DID');
 $rotationPrivate = getenv('ROTATION_PRIVATE');
 $rotationPublic = getenv('ROTATION_PUBLIC');
 $verificationPublic = getenv('VERIFICATION_PUBLIC');
-$repoUrl = getenv('REPO_URL');
+$metadataUrl = getenv('METADATA_URL');
 
 // Validate required inputs
 if (empty($did)) {
@@ -49,20 +49,21 @@ if (empty($rotationPrivate) || empty($rotationPublic)) {
     exit(1);
 }
 
+if (empty($metadataUrl)) {
+    echo "::error::Metadata URL is required\n";
+    exit(1);
+}
+
 // Reconstruct rotation key from private key
 $rotationKey = EcKey::from_private($rotationPrivate);
 $client = new PlcClient();
-
-// Build the FAIR service endpoint
-// For GitHub-hosted packages, we use the raw URL to metadata file
-$serviceEndpoint = $repoUrl . '/releases/latest/download/fair-metadata.json';
 
 // Create update operation to add FAIR service
 $service = [
     [
         'id' => '#fairpm_repo',
         'type' => 'FairPackageManagementRepo',
-        'serviceEndpoint' => $serviceEndpoint,
+        'serviceEndpoint' => $metadataUrl,
     ],
 ];
 
@@ -84,7 +85,7 @@ try {
     $operationArray = (array) $signedOp->jsonSerialize();
     $response = $client->update_did($did, $operationArray);
 
-    echo "::notice::DID updated with FAIR service endpoint\n";
+    echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
     if (!empty($response)) {
         echo "::notice::Update Response: " . json_encode($response) . "\n";
     }
