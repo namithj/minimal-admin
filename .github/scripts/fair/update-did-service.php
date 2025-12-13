@@ -66,6 +66,10 @@ try {
         throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
     }
 
+    echo "::group::Current DID Document (Before Update)\n";
+    echo json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
+    echo "::endgroup::\n";
+
     // Decode existing verification methods
     $verificationMethods = [];
     $methodsData = $currentDoc['verificationMethod'] ?? [];
@@ -81,22 +85,37 @@ try {
     $alsoKnownAs = $currentDoc['alsoKnownAs'] ?? [];
     $services = $currentDoc['services'] ?? [];
 
+    echo "::group::Services Configuration\n";
+    echo "Existing services: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
+    
     // Update services with FAIR endpoint
     $services['fairpm_repo'] = [
         'type' => 'FairPackageManagementRepo',
         'endpoint' => $metadataUrl,
     ];
+    
+    echo "Updated services: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
+    echo "::endgroup::\n";
 
     // Build and sign update operation
     $operation = new PlcOperation(
         type: 'plc_operation',
-        rotation_keys: [$rotationKey],
-        verification_methods: $verificationMethods,
-        also_known_as: $alsoKnownAs,
-        services: $services,
-        prev: $lastOp['cid'] ?? null,
-    );
+    echo "::group::Signed Operation\n";
+    echo json_encode($operationArray, JSON_PRETTY_PRINT) . "\n";
+    echo "::endgroup::\n";
 
+    // Submit update to PLC directory
+    $client->update_did($did, $operationArray);
+
+    echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
+
+    // Verify the update
+    $updatedDoc = $client->resolve_did($did);
+    
+    echo "::group::Updated DID Document (After Update)\n";
+    echo json_encode($updatedDoc, JSON_PRETTY_PRINT) . "\n";
+    echo "::endgroup::\n";
+    
     $signedOp = $operation->sign($rotationKey);
     $operationArray = (array) $signedOp->jsonSerialize();
 
