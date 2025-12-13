@@ -65,6 +65,7 @@ $rotationPrivate = getenv('FAIR_ROTATION_KEY_PRIVATE');
 $rotationPublic = getenv('FAIR_ROTATION_KEY_PUBLIC');
 $verificationPrivate = getenv('FAIR_VERIFICATION_KEY_PRIVATE');
 $verificationPublic = getenv('FAIR_VERIFICATION_KEY_PUBLIC');
+// Get existing DID from repository variables (not secrets)
 $existingDid = getenv('FAIR_DID');
 
 $keysExist = !empty($rotationPrivate) && !empty($rotationPublic)

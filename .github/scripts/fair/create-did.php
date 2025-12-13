@@ -98,20 +98,40 @@ if ($didExists && !empty($existingDid)) {
     $did = DidCodec::generate_plc_did($signedOperation);
 
     echo "::notice::✅ Generated DID: {$did}\n";
+    
+    // Add to step summary for easy visibility
+    $summaryFile = getenv('GITHUB_STEP_SUMMARY');
+    if ($summaryFile) {
+        $summary = "\n## 🔑 DID Generated\n\n";
+        $summary .= "Your plugin's DID has been created:\n\n";
+        $summary .= "```\n{$did}\n```\n\n";
+        $summary .= "### ⚠️ Action Required\n\n";
+        $summary .= "You must save this DID as a repository **variable** (not secret):\n\n";
+        $summary .= "1. Go to: **Settings** → **Secrets and variables** → **Actions** → **Variables** tab\n";
+        $summary .= "2. Click **New repository variable**\n";
+        $summary .= "3. Name: `FAIR_DID`\n";
+        $summary .= "4. Value: `{$did}`\n";
+        $summary .= "5. Click **Add variable**\n\n";
+        $summary .= "This is only needed once. Future publishes will use this stored DID.\n";
+        file_put_contents($summaryFile, $summary, FILE_APPEND);
+    }
+    
     echo "\n";
     echo "╔═══════════════════════════════════════════════════════════════════╗\n";
-    echo "║  🔑 ACTION REQUIRED: Save Your DID as a GitHub Secret            ║\n";
+    echo "║  🔑 ACTION REQUIRED: Save Your DID as a GitHub Variable          ║\n";
     echo "╚═══════════════════════════════════════════════════════════════════╝\n";
     echo "\n";
     echo "Your DID has been created: {$did}\n";
     echo "\n";
-    echo "To complete setup and enable future publishes, add this as a secret:\n";
+    echo "To complete setup and enable future publishes, add this as a VARIABLE:\n";
     echo "\n";
-    echo "1. Go to: Settings → Secrets and variables → Actions\n";
-    echo "2. Click 'New repository secret'\n";
+    echo "1. Go to: Settings → Secrets and variables → Actions → Variables tab\n";
+    echo "2. Click 'New repository variable'\n";
     echo "3. Name: FAIR_DID\n";
     echo "4. Value: {$did}\n";
-    echo "5. Click 'Add secret'\n";
+    echo "5. Click 'Add variable'\n";
+    echo "\n";
+    echo "⚠️  Use VARIABLES (not Secrets) - DIDs contain special characters.\n";
     echo "\n";
     echo "This step is only needed once. Future publishes will use this DID.\n";
     echo "\n";

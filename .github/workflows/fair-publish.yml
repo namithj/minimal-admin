@@ -74,7 +74,7 @@ jobs:
           FAIR_ROTATION_KEY_PUBLIC: ${{ secrets.FAIR_ROTATION_KEY_PUBLIC }}
           FAIR_VERIFICATION_KEY_PRIVATE: ${{ secrets.FAIR_VERIFICATION_KEY_PRIVATE }}
           FAIR_VERIFICATION_KEY_PUBLIC: ${{ secrets.FAIR_VERIFICATION_KEY_PUBLIC }}
-          FAIR_DID: ${{ secrets.FAIR_DID }}
+          FAIR_DID: ${{ vars.FAIR_DID }}
         run: php .github/scripts/fair/manage-keys.php
 
       - name: Fail if keys need to be added (manual setup required)
