@@ -140,7 +140,7 @@ if ($didExists && !empty($existingDid)) {
     $client = new PlcClient();
     try {
         $operationArray = (array) $signedOperation->jsonSerialize();
-        $response = $client->create_did($operationArray);
+        $response = $client->create_did($did, $operationArray);
         echo "::notice::DID submitted to PLC directory successfully\n";
         if (!empty($response)) {
             echo "::notice::PLC Response: " . json_encode($response) . "\n";
