@@ -156,5 +156,6 @@ jobs:
           ROTATION_PUBLIC: ${{ steps.keys.outputs.rotation_public }}
           VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
           METADATA_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/fair-metadata.json
+          PREV_CID: ${{ steps.did.outputs.cid }}
         run: php .github/scripts/fair/update-did-service.php
 

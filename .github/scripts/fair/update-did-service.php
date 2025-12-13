@@ -34,6 +34,7 @@ use FAIR\DID\Keys\KeyFactory;
 $did = getenv('DID');
 $rotationPrivate = getenv('ROTATION_PRIVATE');
 $metadataUrl = getenv('METADATA_URL');
+$prevCid = getenv('PREV_CID');
 
 // Validate required inputs
 if (empty($did)) {
@@ -61,52 +62,44 @@ $client = new PlcClient();
 echo "::notice::PLC client initialized\n";
 
 try {
-    // Get current DID document and last operation
+    // Get current DID document
     echo "::notice::Fetching current DID document for: {$did}\n";
     $currentDoc = $client->resolve_did($did);
     echo "::notice::DID document retrieved successfully\n";
 
-    echo "::notice::Fetching last operation...\n";
-    $lastOp = $client->get_last_operation($did);
+    // Use the CID passed from create-did step
+    if (empty($prevCid)) {
+        echo "::warning::No previous CID provided, fetching from last operation...\n";
+        $lastOp = $client->get_last_operation($did);
+        if (null === $lastOp) {
+            throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
+        }
+        echo "::group::Last Operation Details\n";
+        echo json_encode($lastOp, JSON_PRETTY_PRINT) . "\n";
+        echo "::endgroup::\n";
 
-    if (null === $lastOp) {
-        throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
+        // Reconstruct the PlcOperation from last operation to get its CID
+        $lastRotationKeys = [];
+        foreach ($lastOp['rotationKeys'] ?? [] as $keyStr) {
+            $lastRotationKeys[] = KeyFactory::decode_did_key($keyStr);
+        }
+        $lastVerificationMethods = [];
+        foreach ($lastOp['verificationMethods'] ?? [] as $id => $keyStr) {
+            $lastVerificationMethods[$id] = KeyFactory::decode_did_key($keyStr);
+        }
+        $lastOperation = new PlcOperation(
+            type: $lastOp['type'] ?? 'plc_operation',
+            rotation_keys: $lastRotationKeys,
+            verification_methods: $lastVerificationMethods,
+            also_known_as: $lastOp['alsoKnownAs'] ?? [],
+            services: $lastOp['services'] ?? [],
+            prev: $lastOp['prev'] ?? null,
+        );
+        $prevCid = $lastOperation->get_cid();
+        echo "::notice::Computed CID from last operation: {$prevCid}\n";
+    } else {
+        echo "::notice::Using previous CID from create-did step: {$prevCid}\n";
     }
-
-    echo "::group::Last Operation Details\n";
-    echo json_encode($lastOp, JSON_PRETTY_PRINT) . "\n";
-    echo "::endgroup::\n";
-
-    // Reconstruct the PlcOperation from last operation to get its CID
-    // We need to decode the keys from the operation
-    echo "::notice::Computing CID from last operation...\n";
-
-    // Decode rotation keys
-    $lastRotationKeys = [];
-    foreach ($lastOp['rotationKeys'] ?? [] as $keyStr) {
-        $lastRotationKeys[] = KeyFactory::decode_did_key($keyStr);
-    }
-
-    // Decode verification methods
-    $lastVerificationMethods = [];
-    foreach ($lastOp['verificationMethods'] ?? [] as $id => $keyStr) {
-        $lastVerificationMethods[$id] = KeyFactory::decode_did_key($keyStr);
-    }
-
-    // Reconstruct the operation
-    $lastOperation = new PlcOperation(
-        type: $lastOp['type'] ?? 'plc_operation',
-        rotation_keys: $lastRotationKeys,
-        verification_methods: $lastVerificationMethods,
-        also_known_as: $lastOp['alsoKnownAs'] ?? [],
-        services: $lastOp['services'] ?? [],
-        prev: $lastOp['prev'] ?? null,
-    );
-
-    // Now we can get the CID
-    $prevCid = $lastOperation->get_cid();
-    echo "::notice::Computed CID from last operation: {$prevCid}\n";
-
     // Decode existing verification methods from rotationKeys (not verificationMethod)
     // The rotationKeys field contains the keys we need to preserve
     echo "::notice::Preserving rotation keys...\n";

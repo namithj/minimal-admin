@@ -96,8 +96,10 @@ if ($didExists && !empty($existingDid)) {
 
     // Generate DID from signed operation
     $did = DidCodec::generate_plc_did($signedOperation);
+    $cid = $signedOperation->get_cid();
 
     echo "::notice::Generated DID: {$did}\n";
+    echo "::notice::Operation CID: {$cid}\n";
 
     // Add to step summary for easy visibility
     $summaryFile = getenv('GITHUB_STEP_SUMMARY');
@@ -151,5 +153,6 @@ if ($didExists && !empty($existingDid)) {
     }
 
     write_output('did', $did);
+    write_output('cid', $cid);
     write_output('created', 'true');
 }
