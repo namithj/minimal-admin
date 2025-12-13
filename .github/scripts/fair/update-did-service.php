@@ -29,7 +29,9 @@ require_once $autoloadPath;
 
 use FAIR\DID\Crypto\DidCodec;
 use FAIR\DID\PLC\PlcClient;
+use FAIR\DID\PLC\PlcOperation;
 use FAIR\DID\Keys\EcKey;
+use FAIR\DID\Keys\KeyFactory;
 
 // Get environment variables
 $did = getenv('DID');
@@ -58,15 +60,6 @@ if (empty($metadataUrl)) {
 $rotationKey = EcKey::from_private($rotationPrivate);
 $client = new PlcClient();
 
-// Create update operation to add FAIR service
-$service = [
-    [
-        'id' => '#fairpm_repo',
-        'type' => 'FairPackageManagementRepo',
-        'serviceEndpoint' => $metadataUrl,
-    ],
-];
-
 echo "::group::DID Service Update Debug Information\n";
 echo "DID: {$did}\n";
 echo "Metadata URL: {$metadataUrl}\n";
@@ -78,18 +71,56 @@ try {
     $currentDoc = $client->resolve_did($did);
     echo "Current DID Document: " . json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
 
-    // Create update operation
-    $updateOp = DidCodec::create_update_operation(
-        $did,
-        $rotationKey,
-        $verificationPublic,
-        $service,
-        $currentDoc
+    // Get last operation
+    echo "\nFetching last operation...\n";
+    $lastOp = $client->get_last_operation($did);
+    if (null === $lastOp) {
+        throw new \RuntimeException("Could not retrieve last operation for DID: {$did}");
+    }
+    echo "Last operation CID: " . ($lastOp['cid'] ?? 'null') . "\n";
+
+    // Decode existing rotation keys
+    $rotationKeysArray = [];
+    $rotationKeyData = $currentDoc['rotationKeys'] ?? [$rotationPublic];
+    foreach ($rotationKeyData as $keyStr) {
+        $rotationKeysArray[] = KeyFactory::decode_did_key($keyStr);
+    }
+    echo "Rotation keys count: " . count($rotationKeysArray) . "\n";
+
+    // Decode existing verification methods
+    $verificationMethods = [];
+    $methodsData = $currentDoc['verificationMethods'] ?? [];
+    foreach ($methodsData as $id => $keyStr) {
+        $verificationMethods[$id] = KeyFactory::decode_did_key($keyStr);
+    }
+    echo "Verification methods count: " . count($verificationMethods) . "\n";
+
+    // Get existing values
+    $alsoKnownAs = $currentDoc['alsoKnownAs'] ?? [];
+    $services = $currentDoc['services'] ?? [];
+    
+    // Update services with FAIR endpoint
+    $services['fairpm_repo'] = [
+        'type' => 'FairPackageManagementRepo',
+        'endpoint' => $metadataUrl,
+    ];
+    
+    echo "\nBuilding update operation...\n";
+    echo "Services to include: " . json_encode($services, JSON_PRETTY_PRINT) . "\n";
+
+    // Build update operation
+    $operation = new PlcOperation(
+        type: 'plc_operation',
+        rotation_keys: $rotationKeysArray,
+        verification_methods: $verificationMethods,
+        also_known_as: $alsoKnownAs,
+        services: $services,
+        prev: $lastOp['cid'] ?? null,
     );
 
     // Sign and submit
     echo "\nSigning operation...\n";
-    $signedOp = DidCodec::sign_plc_operation($updateOp, $rotationKey);
+    $signedOp = $operation->sign($rotationKey);
     $operationArray = (array) $signedOp->jsonSerialize();
     echo "Signed Operation: " . json_encode($operationArray, JSON_PRETTY_PRINT) . "\n";
     
