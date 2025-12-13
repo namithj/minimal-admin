@@ -137,8 +137,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
         run: |
+          echo "::group::Metadata Upload Debug"
+          echo "Uploading metadata for version: ${VERSION}"
+          echo "Metadata file contents:"
+          cat /tmp/fair-metadata.json | jq .
+          echo "::endgroup::"
+
           # Upload to the existing release created by release.yml
           gh release upload "${VERSION}" /tmp/fair-metadata.json --clobber
+
+          METADATA_URL="${{ github.server_url }}/${{ github.repository }}/releases/download/${VERSION}/fair-metadata.json"
+          echo "::notice::✅ Metadata uploaded to: ${METADATA_URL}"
 
       - name: Update DID with FAIR service
         if: steps.did.outputs.created == 'true'
@@ -150,28 +159,17 @@ jobs:
           METADATA_URL: ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.version.outputs.version }}/fair-metadata.json
         run: php .github/scripts/fair/update-did-service.php
 
+      - name: Show metadata for workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "::group::Generated Metadata"
+          cat /tmp/fair-metadata.json | jq .
+          echo "::endgroup::"
+
       - name: Upload metadata artifact
         if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: fair-metadata
           path: /tmp/fair-metadata.json
-
-      - name: Summary
-        run: |
-          echo "## FAIR Publish Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Package Information" >> $GITHUB_STEP_SUMMARY
-          echo "- **DID**: \`${{ steps.did.outputs.did }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Version**: \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Checksum**: \`${{ steps.sign.outputs.checksum }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Signature**: \`${{ steps.sign.outputs.signature }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Secrets Status" >> $GITHUB_STEP_SUMMARY
-          echo "The following secrets are configured in your repository:" >> $GITHUB_STEP_SUMMARY
-          echo "- \`FAIR_ROTATION_KEY_PRIVATE\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`FAIR_ROTATION_KEY_PUBLIC\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`FAIR_VERIFICATION_KEY_PRIVATE\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`FAIR_VERIFICATION_KEY_PUBLIC\`" >> $GITHUB_STEP_SUMMARY
-          echo "- \`FAIR_DID\` (after first successful publish)" >> $GITHUB_STEP_SUMMARY
 

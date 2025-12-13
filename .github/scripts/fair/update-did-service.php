@@ -67,9 +67,16 @@ $service = [
     ],
 ];
 
+echo "::group::DID Service Update Debug Information\n";
+echo "DID: {$did}\n";
+echo "Metadata URL: {$metadataUrl}\n";
+echo "Service to add: " . json_encode($service, JSON_PRETTY_PRINT) . "\n";
+
 try {
     // Get current DID document
+    echo "\nFetching current DID document...\n";
     $currentDoc = $client->resolve_did($did);
+    echo "Current DID Document: " . json_encode($currentDoc, JSON_PRETTY_PRINT) . "\n";
 
     // Create update operation
     $updateOp = DidCodec::create_update_operation(
@@ -81,14 +88,35 @@ try {
     );
 
     // Sign and submit
+    echo "\nSigning operation...\n";
     $signedOp = DidCodec::sign_plc_operation($updateOp, $rotationKey);
     $operationArray = (array) $signedOp->jsonSerialize();
+    echo "Signed Operation: " . json_encode($operationArray, JSON_PRETTY_PRINT) . "\n";
+    
+    echo "\nSubmitting update to PLC directory...\n";
     $response = $client->update_did($did, $operationArray);
 
-    echo "::notice::DID updated with FAIR service endpoint: {$metadataUrl}\n";
+    echo "::endgroup::\n";
+    echo "::notice::✅ DID updated with FAIR service endpoint: {$metadataUrl}\n";
     if (!empty($response)) {
-        echo "::notice::Update Response: " . json_encode($response) . "\n";
+        echo "::notice::PLC Response: " . json_encode($response, JSON_PRETTY_PRINT) . "\n";
+    }
+    
+    // Verify the update by fetching the DID document again
+    echo "\n::group::Verifying DID Update\n";
+    $updatedDoc = $client->resolve_did($did);
+    echo "Updated DID Document: " . json_encode($updatedDoc, JSON_PRETTY_PRINT) . "\n";
+    
+    if (isset($updatedDoc['service']) && !empty($updatedDoc['service'])) {
+        echo "::endgroup::\n";
+        echo "::notice::✅ Services array updated successfully\n";
+    } else {
+        echo "::endgroup::\n";
+        echo "::warning::⚠️ Services array is empty after update\n";
     }
 } catch (Exception $e) {
-    echo "::warning::Could not update DID service: " . $e->getMessage() . "\n";
+    echo "::endgroup::\n";
+    echo "::error::❌ Could not update DID service: " . $e->getMessage() . "\n";
+    echo "::error::Stack trace: " . $e->getTraceAsString() . "\n";
+    exit(1);
 }
