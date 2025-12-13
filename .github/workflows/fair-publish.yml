@@ -1,0 +1,199 @@
+name: Publish to FAIR Repository
+
+on:
+  workflow_run:
+    workflows: ["Upload Release Asset"]
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (leave empty to use latest tag)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  PHP_VERSION: '8.3'
+
+jobs:
+  publish:
+    name: Publish to FAIR Repository
+    runs-on: ubuntu-latest
+    # Only run if the triggering workflow succeeded (or if manually triggered)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+
+    steps:
+      - name: Harden the runner (Audit all outbound calls)
+        uses: step-security/harden-runner@4d991eb9b905ef189e4c376166672c3f2f230481 # v2.11.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@9e72090525849c5e82e596468b86eb55e9cc5401 # v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: curl, json, mbstring
+          coverage: none
+
+      - name: Get version
+        id: version
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            # Get the tag from the workflow run that triggered this
+            TAG="${{ github.event.workflow_run.head_branch }}"
+            echo "version=${TAG}" >> $GITHUB_OUTPUT
+          else
+            echo "version=$(git describe --tags --abbrev=0 2>/dev/null || echo '0.0.1')" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Clone FAIR DID Manager
+        run: |
+          git clone --branch initial-implementation --depth 1 \
+            https://github.com/fairpm/did-manager.git /tmp/did-manager
+
+      - name: Install DID Manager dependencies
+        working-directory: /tmp/did-manager
+        run: composer install --no-dev --prefer-dist --no-progress
+
+      - name: Check and setup cryptographic keys
+        id: keys
+        env:
+          FAIR_ROTATION_KEY_PRIVATE: ${{ secrets.FAIR_ROTATION_KEY_PRIVATE }}
+          FAIR_ROTATION_KEY_PUBLIC: ${{ secrets.FAIR_ROTATION_KEY_PUBLIC }}
+          FAIR_VERIFICATION_KEY_PRIVATE: ${{ secrets.FAIR_VERIFICATION_KEY_PRIVATE }}
+          FAIR_VERIFICATION_KEY_PUBLIC: ${{ secrets.FAIR_VERIFICATION_KEY_PUBLIC }}
+          FAIR_DID: ${{ secrets.FAIR_DID }}
+        run: php .github/scripts/fair/manage-keys.php "/tmp/did-manager/vendor/autoload.php"
+
+      - name: Fail if keys need to be added (manual setup required)
+        if: steps.keys.outputs.keys_exist == 'false'
+        run: |
+          echo "::error::======================================================"
+          echo "::error::CRYPTOGRAPHIC KEYS GENERATED"
+          echo "::error::======================================================"
+          echo "::error::"
+          echo "::error::Keys have been generated but need to be manually added as repository secrets."
+          echo "::error::This is a one-time setup process for security."
+          echo "::error::"
+          echo "::error::INSTRUCTIONS:"
+          echo "::error::1. Go to: Settings > Secrets and variables > Actions > New repository secret"
+          echo "::error::2. Add the following 4 secrets (copy values from the log above):"
+          echo "::error::"
+          echo "::error::   - FAIR_ROTATION_KEY_PRIVATE"
+          echo "::error::   - FAIR_ROTATION_KEY_PUBLIC"
+          echo "::error::   - FAIR_VERIFICATION_KEY_PRIVATE"
+          echo "::error::   - FAIR_VERIFICATION_KEY_PUBLIC"
+          echo "::error::"
+          echo "::error::3. After adding all secrets, re-run this workflow"
+          echo "::error::"
+          echo "::error::======================================================"
+          exit 1
+
+      - name: Create or update PLC DID
+        id: did
+        if: steps.keys.outputs.keys_exist == 'true'
+        env:
+          ROTATION_PRIVATE: ${{ steps.keys.outputs.rotation_private }}
+          ROTATION_PUBLIC: ${{ steps.keys.outputs.rotation_public }}
+          VERIFICATION_PRIVATE: ${{ steps.keys.outputs.verification_private }}
+          VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
+          EXISTING_DID: ${{ steps.keys.outputs.did }}
+          DID_EXISTS: ${{ steps.keys.outputs.did_exists }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: php .github/scripts/fair/create-did.php "/tmp/did-manager/vendor/autoload.php"
+
+      - name: Download release asset
+        id: download
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          PLUGIN_NAME="${{ github.event.repository.name }}"
+          ARTIFACT_PATH="/tmp/${PLUGIN_NAME}.zip"
+
+          # Download the release asset created by release.yml
+          gh release download "${VERSION}" -p "${PLUGIN_NAME}.zip" -O "${ARTIFACT_PATH}"
+
+          # Calculate checksum of the actual release asset
+          CHECKSUM=$(sha256sum "${ARTIFACT_PATH}" | cut -d' ' -f1)
+
+          echo "artifact_path=${ARTIFACT_PATH}" >> $GITHUB_OUTPUT
+          echo "checksum=sha256:${CHECKSUM}" >> $GITHUB_OUTPUT
+          echo "::notice::Downloaded release asset: ${ARTIFACT_PATH}"
+          echo "::notice::Checksum: sha256:${CHECKSUM}"
+
+      - name: Sign package artifact
+        id: sign
+        env:
+          VERIFICATION_PRIVATE: ${{ steps.keys.outputs.verification_private }}
+          VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
+          ARTIFACT_PATH: ${{ steps.download.outputs.artifact_path }}
+        run: php .github/scripts/fair/sign-artifact.php "/tmp/did-manager/vendor/autoload.php"
+
+      - name: Generate FAIR metadata
+        id: metadata
+        env:
+          DID: ${{ steps.did.outputs.did }}
+          VERSION: ${{ steps.version.outputs.version }}
+          CHECKSUM: ${{ steps.download.outputs.checksum }}
+          SIGNATURE: ${{ steps.sign.outputs.signature }}
+          ARTIFACT_PATH: ${{ steps.download.outputs.artifact_path }}
+          VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: php .github/scripts/fair/generate-metadata.php "/tmp/did-manager/vendor/autoload.php"
+
+      - name: Update DID with FAIR service
+        if: steps.did.outputs.created == 'true'
+        env:
+          DID: ${{ steps.did.outputs.did }}
+          ROTATION_PRIVATE: ${{ steps.keys.outputs.rotation_private }}
+          ROTATION_PUBLIC: ${{ steps.keys.outputs.rotation_public }}
+          VERIFICATION_PUBLIC: ${{ steps.keys.outputs.verification_public }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: php .github/scripts/fair/update-did-service.php "/tmp/did-manager/vendor/autoload.php"
+
+      - name: Upload metadata to existing release
+        if: github.event_name == 'workflow_run'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          # Upload to the existing release created by release.yml
+          gh release upload "${VERSION}" /tmp/fair-metadata.json --clobber
+
+      - name: Upload metadata artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: fair-metadata
+          path: /tmp/fair-metadata.json
+
+      - name: Summary
+        run: |
+          echo "## FAIR Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Package Information" >> $GITHUB_STEP_SUMMARY
+          echo "- **DID**: \`${{ steps.did.outputs.did }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version**: \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Checksum**: \`${{ steps.download.outputs.checksum }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Secrets Status" >> $GITHUB_STEP_SUMMARY
+          echo "The following secrets are configured in your repository:" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FAIR_ROTATION_KEY_PRIVATE\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FAIR_ROTATION_KEY_PUBLIC\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FAIR_VERIFICATION_KEY_PRIVATE\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FAIR_VERIFICATION_KEY_PUBLIC\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`FAIR_DID\` (after first successful publish)" >> $GITHUB_STEP_SUMMARY
+
