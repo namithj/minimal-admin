@@ -164,7 +164,8 @@ jobs:
           echo "### Package Information" >> $GITHUB_STEP_SUMMARY
           echo "- **DID**: \`${{ steps.did.outputs.did }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- **Version**: \`${{ steps.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **Checksum**: \`${{ steps.download.outputs.checksum }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Checksum**: \`${{ steps.sign.outputs.checksum }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **Signature**: \`${{ steps.sign.outputs.signature }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Secrets Status" >> $GITHUB_STEP_SUMMARY
           echo "The following secrets are configured in your repository:" >> $GITHUB_STEP_SUMMARY
