@@ -1,0 +1,139 @@
+// ==========================================================================
+// Modern Admin CSS - Navigation Overrides
+// ==========================================================================
+// Modernize tabs, pagination, and other navigation elements
+// ==========================================================================
+
+// ==========================================================================
+// Admin Tabs (nav-tab-wrapper)
+// ==========================================================================
+
+.nav-tab-wrapper {
+    border-bottom-color: var(--mac-border-light);
+}
+
+.nav-tab {
+    border-color: transparent;
+    background-color: transparent;
+    color: var(--mac-text-secondary);
+    border-radius: var(--mac-radius-sm) var(--mac-radius-sm) 0 0;
+    transition: all var(--mac-transition);
+}
+
+.nav-tab:hover {
+    background-color: var(--mac-bg-tertiary);
+    color: var(--mac-text-primary);
+}
+
+.nav-tab:focus {
+    box-shadow: var(--mac-shadow-focus);
+    outline: none;
+}
+
+.nav-tab-active,
+.nav-tab-active:hover,
+.nav-tab-active:focus {
+    border-color: var(--mac-border-light);
+    border-bottom-color: var(--mac-bg-primary);
+    background-color: var(--mac-bg-primary);
+    color: var(--mac-text-primary);
+}
+
+// ==========================================================================
+// Pagination
+// ==========================================================================
+
+.pagination-links a,
+.pagination-links span {
+    border-color: var(--mac-border-medium);
+    background-color: var(--mac-bg-primary);
+    color: var(--mac-text-primary);
+    border-radius: var(--mac-radius-sm);
+}
+
+.pagination-links a:hover {
+    border-color: var(--mac-primary);
+    color: var(--mac-primary);
+}
+
+.pagination-links .current {
+    background-color: var(--mac-primary);
+    border-color: var(--mac-primary);
+    color: var(--mac-text-inverse);
+}
+
+// ==========================================================================
+// Screen Options & Help Tabs
+// ==========================================================================
+
+#screen-meta {
+    border-color: var(--mac-border-light);
+    background-color: var(--mac-bg-secondary);
+}
+
+#screen-meta-links .screen-meta-toggle {
+    border-color: var(--mac-border-light);
+}
+
+#screen-meta-links button {
+    color: var(--mac-text-secondary);
+}
+
+#screen-meta-links button:hover,
+#screen-meta-links button:focus {
+    color: var(--mac-primary);
+}
+
+#screen-meta-links button:focus {
+    box-shadow: var(--mac-shadow-focus);
+}
+
+#screen-options-wrap,
+#contextual-help-wrap {
+    background-color: var(--mac-bg-secondary);
+    border-color: var(--mac-border-light);
+}
+
+// ==========================================================================
+// Admin Footer
+// ==========================================================================
+
+#wpfooter {
+    color: var(--mac-text-muted);
+    border-top-color: var(--mac-border-light);
+}
+
+#wpfooter a {
+    color: var(--mac-primary);
+}
+
+// ==========================================================================
+// Contextual Help
+// ==========================================================================
+
+.contextual-help-tabs .active a {
+    background-color: var(--mac-bg-primary);
+    border-left-color: var(--mac-primary);
+}
+
+.help-tab-content {
+    background-color: var(--mac-bg-primary);
+}
+
+// ==========================================================================
+// Modal & Thickbox
+// ==========================================================================
+
+#TB_window {
+    border-radius: var(--mac-radius-lg);
+    box-shadow: var(--mac-shadow-lg);
+}
+
+#TB_title {
+    background-color: var(--mac-bg-secondary);
+    border-bottom-color: var(--mac-border-light);
+}
+
+#TB_ajaxWindowTitle {
+    color: var(--mac-text-primary);
+}

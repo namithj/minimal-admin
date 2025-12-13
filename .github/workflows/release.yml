@@ -1,0 +1,111 @@
+name: Build Release Zip
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g., 1.0.0)'
+        required: false
+        default: ''
+
+jobs:
+  build:
+    name: Build and Package Plugin
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: composer:v2
+
+      - name: Install Composer dependencies (production)
+        run: composer install --no-dev --optimize-autoloader --prefer-dist
+
+      - name: Get version
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VERSION="${{ github.event.release.tag_name }}"
+          elif [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=$(grep -oP "Version:\s*\K[0-9.]+" minimal-admin.php)
+          fi
+          # Remove 'v' prefix if present
+          VERSION="${VERSION#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Building version: $VERSION"
+
+      - name: Create plugin directory
+        run: |
+          mkdir -p build/minimal-admin
+          
+          # Copy plugin files (excluding dev files)
+          rsync -av --progress . build/minimal-admin \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='src' \
+            --exclude='scripts' \
+            --exclude='.gitignore' \
+            --exclude='.gitattributes' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='composer.json' \
+            --exclude='composer.lock' \
+            --exclude='phpcs.xml.dist' \
+            --exclude='phpunit.xml.dist' \
+            --exclude='tests' \
+            --exclude='*.md' \
+            --exclude='*.map' \
+            --exclude='build' \
+            --exclude='.editorconfig' \
+            --exclude='.phpcs.xml.dist' \
+            --exclude='Gruntfile.js' \
+            --exclude='webpack.config.js' \
+            --exclude='vite.config.js' \
+            --exclude='.eslintrc*' \
+            --exclude='.prettierrc*' \
+            --exclude='.stylelintrc*'
+
+      - name: Create zip file
+        run: |
+          cd build
+          zip -r minimal-admin-${{ steps.get_version.outputs.version }}.zip minimal-admin
+          mv minimal-admin-${{ steps.get_version.outputs.version }}.zip ../
+          cd ..
+          echo "Created: minimal-admin-${{ steps.get_version.outputs.version }}.zip"
+          ls -la minimal-admin-*.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minimal-admin-${{ steps.get_version.outputs.version }}
+          path: minimal-admin-${{ steps.get_version.outputs.version }}.zip
+
+      - name: Upload to Release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: minimal-admin-${{ steps.get_version.outputs.version }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

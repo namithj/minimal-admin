@@ -1,0 +1,9 @@
+// ==========================================================================
+// Minimal Admin - Main Entry File
+// ==========================================================================
+// This stylesheet OVERRIDES WordPress admin styles with minimal, clean colors,
+// borders, shadows, and focus states while preserving core layout.
+// ==========================================================================
+
+@use "abstracts/variables" as vars;
+@use "components";

@@ -1,0 +1,183 @@
+// ==========================================================================
+// Modern Admin CSS - Table Overrides
+// ==========================================================================
+// Material Design 3 inspired data table styles
+// ==========================================================================
+
+// ==========================================================================
+// Table Base (MD3 Data Table)
+// ==========================================================================
+
+.widefat {
+    border: 1px solid var(--mac-outline-variant);
+    border-radius: var(--mac-radius-md);
+    box-shadow: none;
+    overflow: hidden;
+}
+
+.widefat thead th,
+.widefat thead td {
+    color: var(--mac-text-primary);
+    border-bottom: 1px solid var(--mac-outline-variant);
+    background-color: var(--mac-surface-container-low);
+    font-weight: 500;
+}
+
+.widefat tfoot th,
+.widefat tfoot td {
+    color: var(--mac-text-secondary);
+    border-top: 1px solid var(--mac-outline-variant);
+    background-color: var(--mac-surface-container-low);
+}
+
+.widefat td,
+.widefat th {
+    border-bottom: 1px solid var(--mac-outline-variant);
+}
+
+// ==========================================================================
+// Alternating Rows
+// ==========================================================================
+
+.striped > tbody > :nth-child(odd),
+ul.striped > :nth-child(odd),
+.alternate {
+    background-color: var(--mac-bg-secondary);
+}
+
+// ==========================================================================
+// Row Hover
+// ==========================================================================
+
+.widefat tbody tr:hover {
+    background-color: var(--mac-bg-tertiary);
+}
+
+// ==========================================================================
+// Row Title
+// ==========================================================================
+
+.widefat .row-title {
+    color: var(--mac-text-primary);
+}
+
+.widefat .row-title:hover {
+    color: var(--mac-primary);
+}
+
+// ==========================================================================
+// Row Actions
+// ==========================================================================
+
+.row-actions span a {
+    color: var(--mac-primary);
+}
+
+.row-actions span a:hover {
+    color: var(--mac-primary-hover);
+}
+
+.row-actions .delete a,
+.row-actions .trash a,
+.row-actions .spam a {
+    color: var(--mac-danger);
+}
+
+.row-actions .delete a:hover,
+.row-actions .trash a:hover,
+.row-actions .spam a:hover {
+    color: #dc2626;
+}
+
+// ==========================================================================
+// Sortable Column Headers
+// ==========================================================================
+
+.widefat thead th a,
+.widefat tfoot th a {
+    color: var(--mac-text-primary);
+}
+
+.widefat thead th a:hover,
+.widefat tfoot th a:hover {
+    color: var(--mac-primary);
+}
+
+th.sorted a {
+    color: var(--mac-text-primary);
+}
+
+// ==========================================================================
+// Status Indicators
+// ==========================================================================
+
+.post-state {
+    color: var(--mac-text-secondary);
+}
+
+// ==========================================================================
+// Subsubsub (Filter Links)
+// ==========================================================================
+
+.subsubsub a {
+    color: var(--mac-primary);
+}
+
+.subsubsub a:hover {
+    color: var(--mac-primary-hover);
+}
+
+.subsubsub .current {
+    color: var(--mac-text-primary);
+}
+
+.subsubsub .count {
+    color: var(--mac-text-muted);
+}
+
+// ==========================================================================
+// Table Navigation
+// ==========================================================================
+
+.tablenav {
+    color: var(--mac-text-secondary);
+}
+
+.tablenav .tablenav-pages a {
+    border-color: var(--mac-border-medium);
+    background-color: var(--mac-bg-primary);
+    border-radius: var(--mac-radius-sm);
+}
+
+.tablenav .tablenav-pages a:hover {
+    border-color: var(--mac-primary);
+    color: var(--mac-primary);
+}
+
+.tablenav .tablenav-pages .current-page {
+    border-color: var(--mac-primary);
+}
+
+.tablenav .tablenav-pages .current-page:focus {
+    box-shadow: var(--mac-shadow-focus);
+}
+
+// ==========================================================================
+// Checkbox Column Highlight
+// ==========================================================================
+
+.widefat tbody th.check-column {
+    border-left: 3px solid transparent;
+}
+
+.widefat tbody tr:hover th.check-column {
+    border-left-color: var(--mac-primary);
+}
+
+// ==========================================================================
+// Empty Table
+// ==========================================================================
+
+.no-items td {
+    color: var(--mac-text-muted);
+}

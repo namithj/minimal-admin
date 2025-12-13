@@ -1,0 +1,16 @@
+// ==========================================================================
+// Modern Admin CSS - Component Overrides
+// ==========================================================================
+// These files override WordPress default admin styles with modern colors,
+// borders, and shadows. Layout is preserved from WordPress core.
+// ==========================================================================
+
+@forward "variables";
+@forward "colors";
+@forward "buttons";
+@forward "forms";
+@forward "tables";
+@forward "notices";
+@forward "cards";
+@forward "navigation";
+@forward "login";

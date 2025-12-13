@@ -1,0 +1,150 @@
+// ==========================================================================
+// Modern Admin CSS - Global Color Overrides
+// ==========================================================================
+// Override WordPress core colors for admin menu, admin bar, and general UI
+// ==========================================================================
+
+// ==========================================================================
+// Admin Menu Colors
+// ==========================================================================
+
+#adminmenuback,
+#adminmenuwrap,
+#adminmenu {
+    background-color: #1e293b;
+}
+
+#adminmenu .wp-submenu {
+    background-color: #334155;
+}
+
+#adminmenu a {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+#adminmenu .wp-submenu a {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#adminmenu a:hover,
+#adminmenu li.menu-top > a:focus,
+#adminmenu .wp-submenu a:hover,
+#adminmenu .wp-submenu a:focus {
+    color: #ffffff;
+}
+
+#adminmenu li.wp-has-current-submenu a.wp-has-current-submenu,
+#adminmenu li.current a.menu-top {
+    background-color: var(--mac-primary);
+    color: #ffffff;
+}
+
+#adminmenu .wp-submenu li.current a {
+    color: #ffffff;
+}
+
+#adminmenu div.wp-menu-image::before {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#adminmenu li:hover div.wp-menu-image::before,
+#adminmenu li a:focus div.wp-menu-image::before {
+    color: #ffffff;
+}
+
+#adminmenu li.wp-has-current-submenu div.wp-menu-image::before,
+#adminmenu li.current div.wp-menu-image::before {
+    color: #ffffff;
+}
+
+#adminmenu .awaiting-mod,
+#adminmenu .update-plugins {
+    background-color: var(--mac-danger);
+    color: #ffffff;
+}
+
+#adminmenu li.wp-menu-separator {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#collapse-button {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+#collapse-button:hover,
+#collapse-button:focus {
+    color: #ffffff;
+}
+
+// ==========================================================================
+// Admin Bar Colors
+// ==========================================================================
+
+#wpadminbar {
+    background-color: #0f172a;
+}
+
+#wpadminbar .ab-item,
+#wpadminbar a.ab-item,
+#wpadminbar > #wp-toolbar span.ab-label,
+#wpadminbar > #wp-toolbar span.noticon {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+#wpadminbar .ab-top-menu > li:hover > .ab-item,
+#wpadminbar .ab-top-menu > li.hover > .ab-item,
+#wpadminbar .ab-top-menu > li > .ab-item:focus {
+    background-color: #1e293b;
+    color: #ffffff;
+}
+
+#wpadminbar .menupop .ab-sub-wrapper {
+    background-color: #1e293b;
+}
+
+#wpadminbar .quicklinks .menupop ul.ab-sub-secondary {
+    background-color: #334155;
+}
+
+// ==========================================================================
+// Page Background
+// ==========================================================================
+
+#wpcontent,
+#wpfooter {
+    background-color: var(--mac-bg-primary);
+}
+
+body.wp-admin {
+    background-color: var(--mac-bg-primary);
+}
+
+.wrap {
+    background-color: transparent;
+}
+
+// ==========================================================================
+// Links
+// ==========================================================================
+
+a {
+    color: var(--mac-primary);
+}
+
+a:hover,
+a:focus {
+    color: var(--mac-primary-hover);
+}
+
+// ==========================================================================
+// Headings
+// ==========================================================================
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--mac-text-primary);
+}
+
+.wrap > h1,
+.wrap > h2 {
+    color: var(--mac-text-primary);
+}

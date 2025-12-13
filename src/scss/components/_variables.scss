@@ -1,0 +1,103 @@
+// ==========================================================================
+// Modern Admin CSS - CSS Custom Properties
+// ==========================================================================
+// Material Design 3 inspired tokens for WordPress admin
+// Uses tonal surfaces, state layers, and MD3 motion
+// ==========================================================================
+
+@use "../abstracts" as *;
+
+:root {
+    // ==========================================================================
+    // Primary Brand Colors (Material Design 3 tonal palette)
+    // ==========================================================================
+    --mac-primary: #1a73e8;
+    --mac-primary-hover: #1557b0;
+    --mac-primary-container: #d3e3fd;
+    --mac-on-primary: #ffffff;
+    --mac-on-primary-container: #041e49;
+    
+    // ==========================================================================
+    // Semantic Colors (MD3 Error, Warning, Success)
+    // ==========================================================================
+    --mac-success: #1e8e3e;
+    --mac-success-bg: #e6f4ea;
+    --mac-on-success: #ffffff;
+    --mac-warning: #e37400;
+    --mac-warning-bg: #fef7e0;
+    --mac-on-warning: #ffffff;
+    --mac-danger: #d93025;
+    --mac-danger-bg: #fce8e6;
+    --mac-on-danger: #ffffff;
+    --mac-info: #1a73e8;
+    --mac-info-bg: #e8f0fe;
+    
+    // ==========================================================================
+    // Surface Colors (MD3 tonal elevation)
+    // ==========================================================================
+    --mac-surface: #ffffff;
+    --mac-surface-dim: #ddd9d9;
+    --mac-surface-container-lowest: #ffffff;
+    --mac-surface-container-low: #f7f2f2;
+    --mac-surface-container: #f1ecec;
+    --mac-surface-container-high: #ebe6e6;
+    --mac-surface-container-highest: #e5e1e1;
+    
+    // ==========================================================================
+    // Text Colors (MD3 on-surface)
+    // ==========================================================================
+    --mac-text-primary: #1f1f1f;
+    --mac-text-secondary: #444746;
+    --mac-text-muted: #5f6368;
+    --mac-text-inverse: #ffffff;
+    
+    // ==========================================================================
+    // Background Colors (Legacy aliases)
+    // ==========================================================================
+    --mac-bg-primary: var(--mac-surface);
+    --mac-bg-secondary: var(--mac-surface-container-low);
+    --mac-bg-tertiary: var(--mac-surface-container);
+    --mac-bg-hover: var(--mac-surface-container-high);
+    
+    // ==========================================================================
+    // Outline Colors (MD3 outline variant)
+    // ==========================================================================
+    --mac-border-light: #e1e3e1;
+    --mac-border-medium: #c4c7c5;
+    --mac-border-dark: #747775;
+    --mac-outline: #747775;
+    --mac-outline-variant: #c4c7c5;
+    
+    // ==========================================================================
+    // State Layers (MD3 interaction states)
+    // ==========================================================================
+    --mac-state-hover: rgba(31, 31, 31, 0.08);
+    --mac-state-focus: rgba(31, 31, 31, 0.12);
+    --mac-state-pressed: rgba(31, 31, 31, 0.12);
+    --mac-state-dragged: rgba(31, 31, 31, 0.16);
+    --mac-state-primary-hover: rgba(26, 115, 232, 0.08);
+    --mac-state-primary-focus: rgba(26, 115, 232, 0.12);
+    
+    // ==========================================================================
+    // Elevation (MD3 - no shadows, tonal surfaces instead)
+    // ==========================================================================
+    --mac-shadow-sm: none;
+    --mac-shadow-md: none;
+    --mac-shadow-lg: none;
+    --mac-shadow-focus: 0 0 0 2px var(--mac-primary);
+    
+    // ==========================================================================
+    // Shape (Angular, sharp corners)
+    // ==========================================================================
+    --mac-radius-sm: 0;
+    --mac-radius-md: 0;
+    --mac-radius-lg: 0;
+    --mac-radius-full: 0;
+    
+    // ==========================================================================
+    // Motion (MD3 easing and duration)
+    // ==========================================================================
+    --mac-transition: 200ms cubic-bezier(0.2, 0, 0, 1);
+    --mac-transition-fast: 100ms cubic-bezier(0.2, 0, 0, 1);
+    --mac-transition-slow: 300ms cubic-bezier(0.2, 0, 0, 1);
+}

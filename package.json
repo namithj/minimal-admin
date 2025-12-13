@@ -1,0 +1,17 @@
+{
+  "name": "minimal-admin",
+  "version": "1.0.0",
+  "description": "Minimal Admin - Clean styling overrides for WordPress admin",
+  "private": true,
+  "scripts": {
+    "dev": "npx sass --watch src/scss:dist/css --style expanded --source-map",
+    "build": "npm run clean && npm run sass:build && npm run sass:minify && npm run sass:rtl",
+    "clean": "node -e \"const fs=require('fs');fs.rmSync('dist',{recursive:true,force:true})\"",
+    "sass:build": "npx sass src/scss:dist/css --style expanded --source-map",
+    "sass:minify": "node scripts/rename-minified.js",
+    "sass:rtl": "node scripts/generate-rtl.js"
+  },
+  "devDependencies": {
+    "sass": "^1.96.0"
+  }
+}

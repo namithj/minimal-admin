@@ -1,0 +1,129 @@
+// ==========================================================================
+// Modern Admin CSS - Button Overrides
+// ==========================================================================
+// Material Design 3 inspired button styles with state layers
+// ==========================================================================
+
+// ==========================================================================
+// Base Button Styles (MD3 Outlined Button)
+// ==========================================================================
+
+.button,
+.button-secondary {
+    border: 1px solid var(--mac-outline);
+    background-color: transparent;
+    color: var(--mac-primary);
+    border-radius: var(--mac-radius-md);
+    box-shadow: none;
+    transition: background-color var(--mac-transition), border-color var(--mac-transition);
+    position: relative;
+}
+
+.button:hover,
+.button-secondary:hover {
+    border-color: var(--mac-primary);
+    background-color: var(--mac-state-primary-hover);
+    color: var(--mac-primary);
+}
+
+.button:focus,
+.button-secondary:focus {
+    border-color: var(--mac-primary);
+    background-color: var(--mac-state-primary-focus);
+    box-shadow: var(--mac-shadow-focus);
+    outline: none;
+}
+
+.button:active,
+.button-secondary:active {
+    background-color: var(--mac-state-primary-focus);
+}
+
+// ==========================================================================
+// Primary Button (MD3 Filled Button)
+// ==========================================================================
+
+.button-primary {
+    background-color: var(--mac-primary);
+    border-color: var(--mac-primary);
+    color: var(--mac-on-primary);
+    border-radius: var(--mac-radius-md);
+    box-shadow: none;
+    transition: background-color var(--mac-transition), box-shadow var(--mac-transition);
+}
+
+.button-primary:hover {
+    background-color: var(--mac-primary-hover);
+    border-color: var(--mac-primary-hover);
+    color: var(--mac-on-primary);
+}
+
+.button-primary:focus {
+    background-color: var(--mac-primary-hover);
+    border-color: var(--mac-primary-hover);
+    box-shadow: var(--mac-shadow-focus);
+    outline: none;
+}
+
+.button-primary:active {
+    background-color: var(--mac-primary-hover);
+}
+
+// ==========================================================================
+// Disabled Buttons
+// ==========================================================================
+
+.button:disabled,
+.button[disabled],
+.button-secondary:disabled,
+.button-secondary[disabled],
+.button-primary:disabled,
+.button-primary[disabled],
+.button-disabled {
+    background-color: var(--mac-bg-tertiary) !important;
+    border-color: var(--mac-border-light) !important;
+    color: var(--mac-text-muted) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+}
+
+// ==========================================================================
+// Link Buttons
+// ==========================================================================
+
+.button-link {
+    color: var(--mac-primary);
+}
+
+.button-link:hover,
+.button-link:focus {
+    color: var(--mac-primary-hover);
+}
+
+.button-link-delete {
+    color: var(--mac-danger);
+}
+
+.button-link-delete:hover,
+.button-link-delete:focus {
+    color: #dc2626;
+}
+
+// ==========================================================================
+// Button Group (wp-header-end, etc)
+// ==========================================================================
+
+.page-title-action {
+    border-color: var(--mac-primary);
+    color: var(--mac-primary);
+    border-radius: var(--mac-radius-md);
+}
+
+.page-title-action:hover {
+    background-color: var(--mac-primary);
+    color: var(--mac-text-inverse);
+}
+
+.page-title-action:focus {
+    box-shadow: var(--mac-shadow-focus);
+}

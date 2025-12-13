@@ -1,0 +1,17 @@
+// ==========================================================================
+// Modern Admin CSS - Login Entry File
+// ==========================================================================
+// Separate stylesheet for the WordPress login page
+// ==========================================================================
+
+@use "abstracts/variables" as vars;
+@use "components/variables";
+@use "components/login";
+
+// ==========================================================================
+// Login Page Background
+// ==========================================================================
+
+body.login {
+    background-color: var(--mac-bg-secondary);
+}

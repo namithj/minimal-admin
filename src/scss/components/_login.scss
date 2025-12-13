@@ -1,0 +1,169 @@
+// ==========================================================================
+// Modern Admin CSS - Login Page Overrides
+// ==========================================================================
+// Modernize login page with updated colors and subtle styling
+// ==========================================================================
+
+// ==========================================================================
+// Login Form Container
+// ==========================================================================
+
+#login {
+    h1 a {
+        color: var(--mac-text-primary);
+    }
+}
+
+#loginform,
+#registerform,
+#lostpasswordform {
+    border-color: var(--mac-border-light);
+    border-radius: var(--mac-radius-lg);
+    box-shadow: var(--mac-shadow-lg);
+    background-color: var(--mac-bg-primary);
+}
+
+// ==========================================================================
+// Login Form Inputs
+// ==========================================================================
+
+.login form .input,
+.login input[type="text"],
+.login input[type="password"] {
+    border-color: var(--mac-border-medium);
+    background-color: var(--mac-bg-primary);
+    color: var(--mac-text-primary);
+    border-radius: var(--mac-radius-sm);
+}
+
+.login form .input:focus,
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
+    border-color: var(--mac-primary);
+    box-shadow: var(--mac-shadow-focus);
+    outline: none;
+}
+
+// ==========================================================================
+// Login Button
+// ==========================================================================
+
+.login .button-primary {
+    background-color: var(--mac-primary);
+    border-color: var(--mac-primary);
+    border-radius: var(--mac-radius-md);
+    box-shadow: var(--mac-shadow-sm);
+}
+
+.login .button-primary:hover {
+    background-color: var(--mac-primary-hover);
+    border-color: var(--mac-primary-hover);
+}
+
+.login .button-primary:focus {
+    box-shadow: var(--mac-shadow-focus);
+}
+
+// ==========================================================================
+// Login Labels
+// ==========================================================================
+
+.login label {
+    color: var(--mac-text-primary);
+}
+
+// ==========================================================================
+// Remember Me Checkbox
+// ==========================================================================
+
+.login #rememberme {
+    border-color: var(--mac-border-medium);
+}
+
+.login #rememberme:checked {
+    background-color: var(--mac-primary);
+    border-color: var(--mac-primary);
+}
+
+.login #rememberme:focus {
+    box-shadow: var(--mac-shadow-focus);
+}
+
+// ==========================================================================
+// Login Links
+// ==========================================================================
+
+.login #nav a,
+.login #backtoblog a {
+    color: var(--mac-text-muted);
+}
+
+.login #nav a:hover,
+.login #backtoblog a:hover {
+    color: var(--mac-primary);
+}
+
+// ==========================================================================
+// Login Messages
+// ==========================================================================
+
+.login .message,
+.login .success {
+    border-left-color: var(--mac-info);
+    background-color: var(--mac-info-bg);
+    border-radius: var(--mac-radius-sm);
+    box-shadow: var(--mac-shadow-sm);
+}
+
+.login .success {
+    border-left-color: var(--mac-success);
+    background-color: var(--mac-success-bg);
+}
+
+#login_error {
+    border-left-color: var(--mac-danger);
+    background-color: var(--mac-danger-bg);
+    border-radius: var(--mac-radius-sm);
+    box-shadow: var(--mac-shadow-sm);
+}
+
+#login_error a {
+    color: #dc2626;
+}
+
+// ==========================================================================
+// Privacy Policy Link
+// ==========================================================================
+
+.login .privacy-policy-page-link a {
+    color: var(--mac-text-muted);
+}
+
+.login .privacy-policy-page-link a:hover {
+    color: var(--mac-primary);
+}
+
+// ==========================================================================
+// Language Switcher
+// ==========================================================================
+
+.language-switcher {
+    border-color: var(--mac-border-light);
+    background-color: var(--mac-bg-primary);
+    border-radius: var(--mac-radius-md);
+    box-shadow: var(--mac-shadow-sm);
+}
+
+.language-switcher select {
+    border-color: var(--mac-border-medium);
+    border-radius: var(--mac-radius-sm);
+}
+
+.language-switcher select:focus {
+    border-color: var(--mac-primary);
+    box-shadow: var(--mac-shadow-focus);
+}
+
+.language-switcher .button {
+    border-radius: var(--mac-radius-sm);
+}

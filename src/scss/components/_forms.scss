@@ -1,0 +1,131 @@
+// ==========================================================================
+// Modern Admin CSS - Form Overrides
+// ==========================================================================
+// Material Design 3 inspired form elements
+// ==========================================================================
+
+// ==========================================================================
+// Text Inputs, Selects, Textareas (MD3 Outlined Text Field)
+// ==========================================================================
+
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+input[type="time"],
+select,
+textarea {
+    border: 1px solid var(--mac-outline);
+    background-color: transparent;
+    color: var(--mac-text-primary);
+    border-radius: var(--mac-radius-sm);
+    box-shadow: none;
+    transition: border-color var(--mac-transition), box-shadow var(--mac-transition);
+    caret-color: var(--mac-primary);
+}
+
+input[type="text"]:hover,
+input[type="password"]:hover,
+input[type="email"]:hover,
+input[type="number"]:hover,
+input[type="search"]:hover,
+input[type="tel"]:hover,
+input[type="url"]:hover,
+input[type="date"]:hover,
+input[type="datetime-local"]:hover,
+input[type="month"]:hover,
+input[type="week"]:hover,
+input[type="time"]:hover,
+select:hover,
+textarea:hover {
+    border-color: var(--mac-text-primary);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="datetime-local"]:focus,
+input[type="month"]:focus,
+input[type="week"]:focus,
+input[type="time"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--mac-primary);
+    border-width: 2px;
+    box-shadow: none;
+    outline: none;
+}
+
+// ==========================================================================
+// Checkboxes & Radio Buttons - Only override focus state
+// ==========================================================================
+
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+    border-color: var(--mac-primary);
+    box-shadow: var(--mac-shadow-focus);
+    outline: none;
+}
+
+// ==========================================================================
+// Disabled Form Elements
+// ==========================================================================
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background-color: var(--mac-bg-tertiary);
+    border-color: var(--mac-border-light);
+    color: var(--mac-text-muted);
+    cursor: not-allowed;
+}
+
+// ==========================================================================
+// Labels & Descriptions
+// ==========================================================================
+
+label {
+    color: var(--mac-text-primary);
+}
+
+.description,
+p.description {
+    color: var(--mac-text-secondary);
+}
+
+// ==========================================================================
+// Form Tables
+// ==========================================================================
+
+.form-table th {
+    color: var(--mac-text-primary);
+}
+
+.form-table td fieldset label {
+    color: var(--mac-text-primary);
+}
+
+// ==========================================================================
+// Search Box
+// ==========================================================================
+
+.search-box input[type="search"] {
+    border-radius: var(--mac-radius-md);
+    border-width: 2px;
+}
+
+.search-box .button {
+    border-radius: var(--mac-radius-md);
+}

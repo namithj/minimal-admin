@@ -1,0 +1,338 @@
+// ==========================================================================
+// Modern Admin CSS - Main Variables
+// ==========================================================================
+// Modern color palette and design tokens for WordPress admin
+// ==========================================================================
+
+@use "sass:color";
+
+// ==========================================================================
+// Color Palette
+// ==========================================================================
+
+// Primary Colors
+$primary: #6366f1 !default;
+$primary-hover: #4f46e5 !default;
+$primary-light: #818cf8 !default;
+$primary-dark: #4338ca !default;
+
+// Secondary Colors
+$secondary: #10b981 !default;
+$secondary-hover: #059669 !default;
+$secondary-light: #34d399 !default;
+
+// Accent Colors
+$accent: #f59e0b !default;
+$accent-hover: #d97706 !default;
+$accent-light: #fbbf24 !default;
+
+// Semantic Colors
+$success: #10b981 !default;
+$success-light: #d1fae5 !default;
+$success-dark: #059669 !default;
+
+$warning: #f59e0b !default;
+$warning-light: #fef3c7 !default;
+$warning-dark: #d97706 !default;
+
+$danger: #ef4444 !default;
+$danger-light: #fee2e2 !default;
+$danger-dark: #dc2626 !default;
+
+$info: #3b82f6 !default;
+$info-light: #dbeafe !default;
+$info-dark: #2563eb !default;
+
+// ==========================================================================
+// Background Colors
+// ==========================================================================
+
+// Dark Theme (Default for Admin)
+$bg-primary: #0f172a !default;
+$bg-secondary: #1e293b !default;
+$bg-tertiary: #334155 !default;
+$bg-surface: #1e293b !default;
+$bg-elevated: #334155 !default;
+
+// Aliases for dark backgrounds
+$bg-dark: $bg-primary;
+$bg-dark-secondary: $bg-secondary;
+
+// Light Theme
+$bg-light: #f8fafc !default;
+$bg-light-secondary: #f1f5f9 !default;
+$bg-white: #ffffff !default;
+
+// Content Area (Light by default)
+$bg-content: #f1f5f9 !default;
+$bg-content-secondary: #ffffff !default;
+
+// ==========================================================================
+// Text Colors
+// ==========================================================================
+
+$text-primary: #f8fafc !default;
+$text-secondary: #94a3b8 !default;
+$text-muted: #64748b !default;
+$text-disabled: #475569 !default;
+
+// Light theme text
+$text-dark: #1e293b !default;
+$text-dark-secondary: #475569 !default;
+$text-dark-muted: #64748b !default;
+
+// Aliases for light theme text
+$text-light: $text-primary;
+$text-light-secondary: $text-secondary;
+
+// Link Colors
+$link-color: #6366f1 !default;
+$link-hover: #4f46e5 !default;
+$link-visited: #7c3aed !default;
+
+// ==========================================================================
+// Border Colors
+// ==========================================================================
+
+$border-primary: #334155 !default;
+$border-secondary: #475569 !default;
+$border-light: #e2e8f0 !default;
+$border-lighter: #f1f5f9 !default;
+
+// Alias for dark border
+$border-dark: $border-primary;
+
+// ==========================================================================
+// Admin Menu Colors
+// ==========================================================================
+
+$menu-background: $bg-primary !default;
+$menu-text: $text-primary !default;
+$menu-text-hover: #ffffff !default;
+$menu-icon: $text-secondary !default;
+$menu-icon-hover: #ffffff !default;
+
+$menu-highlight-background: $primary !default;
+$menu-highlight-text: #ffffff !default;
+$menu-highlight-icon: #ffffff !default;
+
+$menu-current-background: $primary !default;
+$menu-current-text: #ffffff !default;
+$menu-current-icon: #ffffff !default;
+
+$menu-submenu-background: $bg-secondary !default;
+$menu-submenu-text: $text-secondary !default;
+$menu-submenu-text-hover: #ffffff !default;
+$menu-submenu-current-text: #ffffff !default;
+
+$menu-bubble-background: $danger !default;
+$menu-bubble-text: #ffffff !default;
+
+$menu-collapse-text: $text-secondary !default;
+$menu-collapse-icon: $text-secondary !default;
+$menu-collapse-hover-text: #ffffff !default;
+$menu-collapse-hover-icon: #ffffff !default;
+
+// ==========================================================================
+// Admin Bar Colors
+// ==========================================================================
+
+$adminbar-background: $bg-primary !default;
+$adminbar-text: $text-primary !default;
+$adminbar-text-hover: #ffffff !default;
+$adminbar-avatar-frame: $bg-tertiary !default;
+$adminbar-input-background: $bg-tertiary !default;
+
+// ==========================================================================
+// Button Colors
+// ==========================================================================
+
+$button-primary-bg: $primary !default;
+$button-primary-text: #ffffff !default;
+$button-primary-hover-bg: $primary-hover !default;
+$button-primary-hover-text: #ffffff !default;
+
+$button-secondary-bg: transparent !default;
+$button-secondary-text: $primary !default;
+$button-secondary-border: $primary !default;
+$button-secondary-hover-bg: $primary !default;
+$button-secondary-hover-text: #ffffff !default;
+
+$button-danger-bg: $danger !default;
+$button-danger-text: #ffffff !default;
+$button-danger-hover-bg: $danger-dark !default;
+
+// ==========================================================================
+// Form Colors
+// ==========================================================================
+
+$input-background: #ffffff !default;
+$input-border: $border-light !default;
+$input-border-focus: $primary !default;
+$input-text: $text-dark !default;
+$input-placeholder: $text-dark-muted !default;
+$input-disabled-bg: $bg-light-secondary !default;
+
+$checkbox-checked-bg: $primary !default;
+$checkbox-checked-border: $primary !default;
+$radio-checked-bg: $primary !default;
+
+// ==========================================================================
+// Table Colors
+// ==========================================================================
+
+$table-header-bg: $bg-light-secondary !default;
+$table-header-text: $text-dark !default;
+$table-row-bg: #ffffff !default;
+$table-row-alt-bg: $bg-light !default;
+$table-row-hover-bg: color.adjust($primary, $lightness: 45%) !default;
+$table-border: $border-light !default;
+
+// ==========================================================================
+// Dashboard Colors
+// ==========================================================================
+
+$dashboard-widget-bg: #ffffff !default;
+$dashboard-widget-header-bg: $bg-light !default;
+$dashboard-widget-border: $border-light !default;
+
+// ==========================================================================
+// Spacing Scale
+// ==========================================================================
+
+$spacing-0: 0 !default;
+$spacing-1: 0.25rem !default;  // 4px
+$spacing-2: 0.5rem !default;   // 8px
+$spacing-3: 0.75rem !default;  // 12px
+$spacing-4: 1rem !default;     // 16px
+$spacing-5: 1.25rem !default;  // 20px
+$spacing-6: 1.5rem !default;   // 24px
+$spacing-8: 2rem !default;     // 32px
+$spacing-10: 2.5rem !default;  // 40px
+$spacing-12: 3rem !default;    // 48px
+$spacing-16: 4rem !default;    // 64px
+
+// ==========================================================================
+// Border Radius
+// ==========================================================================
+
+$radius-none: 0 !default;
+$radius-sm: 0.25rem !default;   // 4px
+$radius-md: 0.375rem !default;  // 6px
+$radius-lg: 0.5rem !default;    // 8px
+$radius-xl: 0.75rem !default;   // 12px
+$radius-2xl: 1rem !default;     // 16px
+$radius-3xl: 1.5rem !default;   // 24px
+$radius-full: 9999px !default;
+
+// ==========================================================================
+// Shadows
+// ==========================================================================
+
+$shadow-none: none !default;
+$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !default;
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1) !default;
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !default;
+$shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !default;
+$shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !default;
+$shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05) !default;
+
+// Focus shadows
+$shadow-focus: 0 0 0 3px rgba($primary, 0.3) !default;
+$shadow-focus-danger: 0 0 0 3px rgba($danger, 0.3) !default;
+$shadow-focus-success: 0 0 0 3px rgba($success, 0.3) !default;
+
+// ==========================================================================
+// Typography
+// ==========================================================================
+
+// Font Families
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !default;
+$font-family-mono: "SF Mono", "Cascadia Code", "Fira Code", Consolas, "Liberation Mono", Menlo, monospace !default;
+$font-family-heading: $font-family-base !default;
+
+// Aliases for convenience
+$font-sans: $font-family-base;
+$font-mono: $font-family-mono;
+
+// Font Sizes
+$font-size-xs: 0.75rem !default;    // 12px
+$font-size-sm: 0.875rem !default;   // 14px
+$font-size-base: 1rem !default;     // 16px
+$font-size-lg: 1.125rem !default;   // 18px
+$font-size-xl: 1.25rem !default;    // 20px
+$font-size-2xl: 1.5rem !default;    // 24px
+$font-size-3xl: 1.875rem !default;  // 30px
+$font-size-4xl: 2.25rem !default;   // 36px
+$font-size-5xl: 3rem !default;      // 48px
+
+// Font Weights
+$font-weight-light: 300 !default;
+$font-weight-normal: 400 !default;
+$font-weight-medium: 500 !default;
+$font-weight-semibold: 600 !default;
+$font-weight-bold: 700 !default;
+
+// Line Heights
+$line-height-none: 1 !default;
+$line-height-tight: 1.25 !default;
+$line-height-snug: 1.375 !default;
+$line-height-normal: 1.5 !default;
+$line-height-relaxed: 1.625 !default;
+$line-height-loose: 2 !default;
+
+// Letter Spacing
+$letter-spacing-tight: -0.025em !default;
+$letter-spacing-normal: 0 !default;
+$letter-spacing-wide: 0.025em !default;
+$letter-spacing-wider: 0.05em !default;
+
+// ==========================================================================
+// Transitions
+// ==========================================================================
+
+$transition-fast: 150ms ease !default;
+$transition-normal: 250ms ease !default;
+$transition-slow: 350ms ease !default;
+
+$transition-colors: color $transition-fast, background-color $transition-fast, border-color $transition-fast !default;
+$transition-shadow: box-shadow $transition-fast !default;
+$transition-transform: transform $transition-fast !default;
+$transition-all: all $transition-fast !default;
+
+// ==========================================================================
+// Z-Index Scale
+// ==========================================================================
+
+$z-dropdown: 1000 !default;
+$z-sticky: 1020 !default;
+$z-fixed: 1030 !default;
+$z-modal-backdrop: 1040 !default;
+$z-modal: 1050 !default;
+$z-popover: 1060 !default;
+$z-tooltip: 1070 !default;
+$z-adminbar: 99999 !default;
+$z-adminmenu: 9990 !default;
+
+// ==========================================================================
+// Breakpoints
+// ==========================================================================
+
+$breakpoint-xs: 480px !default;
+$breakpoint-sm: 600px !default;
+$breakpoint-md: 782px !default;
+$breakpoint-lg: 960px !default;
+$breakpoint-xl: 1280px !default;
+$breakpoint-2xl: 1440px !default;
+
+// ==========================================================================
+// Layout
+// ==========================================================================
+
+$admin-menu-width: 160px !default;
+$admin-menu-width-collapsed: 36px !default;
+$adminbar-height: 32px !default;
+$adminbar-height-mobile: 46px !default;
+
+// Alias for admin bar height
+$admin-bar-height: $adminbar-height;

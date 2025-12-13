@@ -1,0 +1,113 @@
+// ==========================================================================
+// Modern Admin CSS - Notice Overrides
+// ==========================================================================
+// Material Design 3 inspired banner/snackbar styles
+// ==========================================================================
+
+// ==========================================================================
+// Base Notice Styles
+// ==========================================================================
+
+.notice,
+div.updated,
+div.error {
+    border-left-width: 4px;
+    border-radius: var(--mac-radius-md);
+    box-shadow: none;
+    border: 1px solid var(--mac-outline-variant);
+    border-left-width: 4px;
+}
+
+// ==========================================================================
+// Success Notice (MD3 Green)
+// ==========================================================================
+
+.notice-success,
+div.updated {
+    border-left-color: var(--mac-success);
+    background-color: var(--mac-success-bg);
+    border-color: var(--mac-success-bg);
+    border-left-color: var(--mac-success);
+}
+
+.notice-success p,
+div.updated p {
+    color: #137333;
+}
+
+// ==========================================================================
+// Error Notice (MD3 Red)
+// ==========================================================================
+
+.notice-error,
+div.error {
+    border-left-color: var(--mac-danger);
+    background-color: var(--mac-danger-bg);
+    border-color: var(--mac-danger-bg);
+    border-left-color: var(--mac-danger);
+}
+
+.notice-error p,
+div.error p {
+    color: #c5221f;
+}
+
+// ==========================================================================
+// Warning Notice (MD3 Orange)
+// ==========================================================================
+
+.notice-warning {
+    border-left-color: var(--mac-warning);
+    background-color: var(--mac-warning-bg);
+    border-color: var(--mac-warning-bg);
+    border-left-color: var(--mac-warning);
+}
+
+.notice-warning p {
+    color: #b06000;
+}
+
+// ==========================================================================
+// Info Notice (MD3 Blue)
+// ==========================================================================
+
+.notice-info {
+    border-left-color: var(--mac-info);
+    background-color: var(--mac-info-bg);
+    border-color: var(--mac-info-bg);
+    border-left-color: var(--mac-info);
+}
+
+.notice-info p {
+    color: #1967d2;
+}
+
+// ==========================================================================
+// Dismiss Button
+// ==========================================================================
+
+.notice-dismiss {
+    color: var(--mac-text-muted);
+    transition: color var(--mac-transition);
+}
+
+.notice-dismiss:hover,
+.notice-dismiss:focus {
+    color: var(--mac-text-primary);
+}
+
+.notice-dismiss:focus {
+    outline: 2px solid var(--mac-primary);
+    outline-offset: 2px;
+}
+
+// ==========================================================================
+// Update Nag
+// ==========================================================================
+
+.update-nag {
+    border-color: var(--mac-warning);
+    background-color: var(--mac-warning-bg);
+    color: #92400e;
+    border-radius: var(--mac-radius-sm);
+}
