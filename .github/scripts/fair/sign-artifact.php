@@ -72,7 +72,7 @@ $verificationKey = EdDsaKey::from_private($verificationPrivate);
 
 // Read artifact and compute hash (as hex string, not binary)
 $artifactContents = file_get_contents($artifactPath);
-$hash = hash('sha256', $artifactContents, false);  // false = hex output
+$hash = hash('sha384', $artifactContents, false);  // false = hex output
 
 // Sign the hash (returns hex signature)
 $signatureHex = $verificationKey->sign($hash);
