@@ -4,10 +4,11 @@ Donate link: https://smartlogix.co.in
 Tags: admin, admin theme, admin styles, dashboard, minimal
 Requires at least: 6.0
 Tested up to: 6.9
-Stable tag: 0.0.1
+Stable tag: 0.0.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Security: namithj@smartlogix.co.in
 
 Adds minimal, clean styling overrides to WordPress admin with updated colors, borders, and focus states while preserving core layout.
 
