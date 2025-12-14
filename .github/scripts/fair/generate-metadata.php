@@ -113,7 +113,7 @@ $generator->set_did($did);
 $artifactFilename = basename($artifactPath);
 
 // Build release URL (GitHub release asset)
-$releaseUrl = $repoUrl . "/releases/download/v{$version}/{$artifactFilename}";
+$releaseUrl = $repoUrl . "/releases/download/{$version}/{$artifactFilename}";
 
 // Generate metadata with release info
 $metadata = $generator->generate();
