@@ -128,11 +128,13 @@ $metadata['releases'] = [
         ],
         'artifacts' => [
             'package' => [
-                'id' => 'main',
-                'url' => $releaseUrl,
-                'content-type' => 'application/zip',
-                'signature' => $signature,
-                'checksum' => $checksum,
+				[
+					'id' => 'main',
+					'url' => $releaseUrl,
+					'content-type' => 'application/zip',
+					'signature' => $signature,
+					'checksum' => $checksum,
+				]
             ],
         ],
     ],
