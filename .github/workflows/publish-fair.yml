@@ -1,0 +1,33 @@
+name: Publish FAIR Metadata
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version tag (for example v1.2.3)
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publish to FAIR
+        uses: fairpm/fair-pulse@v1
+        with:
+          version: ${{ inputs.version }}
+          artifact-name: minimal-admin.zip
+          upload-metadata: 'true'
+          update-did-service: 'true'
+        env:
+          FAIR_ROTATION_KEY_PRIVATE: ${{ secrets.FAIR_ROTATION_KEY_PRIVATE }}
+          FAIR_ROTATION_KEY_PUBLIC: ${{ secrets.FAIR_ROTATION_KEY_PUBLIC }}
+          FAIR_VERIFICATION_KEY_PRIVATE: ${{ secrets.FAIR_VERIFICATION_KEY_PRIVATE }}
+          FAIR_VERIFICATION_KEY_PUBLIC: ${{ secrets.FAIR_VERIFICATION_KEY_PUBLIC }}
+          FAIR_DID: ${{ vars.FAIR_DID }}
